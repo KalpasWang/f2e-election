@@ -118,13 +118,8 @@ const config: Config = {
             foreground: "#334155",
             focus: "#F8F9FA",
             divider: "#DEE2E6",
-            primary: {
-              DEFAULT: "#D4009B",
-              foreground: "#334155",
-            },
-            secondary: {
-              foreground: "#64748B",
-            },
+            primary: "#D4009B",
+            secondary: "#64748B",
           },
         },
         dark: {
