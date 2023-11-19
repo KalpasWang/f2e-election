@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap");
+
+@layer base {
+  h1 {
+    @apply text-h1-mobile font-bold leading-normal sm:text-h1-desktop;
+  }
+  h2 {
+    @apply text-h2-mobile font-bold leading-normal sm:text-h2-desktop;
+  }
+  h3 {
+    @apply text-h3-mobile font-bold leading-normal sm:text-h3-desktop;
+  }
+  h4 {
+    @apply text-h4-mobile font-bold leading-normal sm:text-h4-desktop;
+  }
+  h5 {
+    @apply text-h5-mobile font-bold leading-normal sm:text-h5-desktop;
+  }
+  h6 {
+    @apply text-h6-mobile font-bold leading-normal sm:text-h6-desktop;
+  }
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
