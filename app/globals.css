@@ -6,7 +6,7 @@
 
 @layer base {
   h1 {
-    @apply text-h1-mobile font-bold leading-normal sm:text-h1-desktop;
+    @apply text-h1-mobile leading-normal sm:text-h1-desktop;
   }
   h2 {
     @apply text-h2-mobile font-bold leading-normal sm:text-h2-desktop;

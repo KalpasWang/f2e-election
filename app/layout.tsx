@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["300", "400", "700"] });
+export const mantouSans = localFont({
+  src: "../MantouSans-Regular.ttf",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "台灣歷年總統 都幾?",

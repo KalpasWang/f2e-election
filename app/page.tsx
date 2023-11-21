@@ -1,15 +1,18 @@
 import Logo from "@/components/logo";
 import { electionYears } from "@/config/electionData";
-import { Button, Image } from "@nextui-org/react";
+import { Button, Image, cn } from "@nextui-org/react";
 import NextLink from "next/link";
+import { mantouSans } from "./layout";
 
 export default function Home() {
   return (
     <main className="h-screen bg-background flex flex-col justify-between items-center">
       {/* logo and title, button */}
       <div className="container pt-96">
-        <Logo className="block mx-auto" />
-        <h1 className="text-center">台灣歷年總統 都幾?</h1>
+        <Logo className="block mx-auto w-[137px] h-[86px]" />
+        <h1 className={cn(mantouSans.className, "text-center")}>
+          台灣歷年總統 都幾?
+        </h1>
         <p className="py-24 text-primary text-2xl font-bold text-center">
           選擇查詢年份
         </p>
@@ -34,7 +37,8 @@ export default function Home() {
           width={256}
           height={256}
           classNames={{
-            img: "w-100 h-100 hidden lg:w-192 lg:h-192 xl:w-256 xl:h-256 xl:block",
+            wrapper: "hidden xl:block",
+            img: "w-256 h-256 hidden xl:block",
           }}
         />
         <Image
@@ -43,7 +47,8 @@ export default function Home() {
           width={256}
           height={256}
           classNames={{
-            img: "w-100 h-100 hidden lg:w-192 lg:h-192 xl:w-256 xl:h-256 lg:block",
+            wrapper: "hidden md:block",
+            img: "w-100 h-100 hidden lg:w-192 lg:h-192 xl:w-256 xl:h-256 md:block",
           }}
         />
         <Image
