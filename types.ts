@@ -1,5 +1,21 @@
 import { Feature, FeatureCollection, Geometry } from "geojson";
 
+// election years
+export type ElectionYear = 1996 | 2000 | 2004 | 2008 | 2012 | 2016 | 2020;
+
+// election data unit
+export type ElectionDatum = {
+  year: ElectionYear;
+  disable: boolean;
+  candidates: string;
+  voteResult: string;
+  townsVoteResult: string;
+};
+
+export type ElectionData = {
+  [year in ElectionYear]: ElectionDatum;
+};
+
 // districts type
 export type District = "county" | "town";
 
