@@ -1,15 +1,41 @@
 import { Feature, FeatureCollection, Geometry } from "geojson";
+import voteResult from "@/data/voteResult2020.json";
 
 // election years
 export type ElectionYear = 1996 | 2000 | 2004 | 2008 | 2012 | 2016 | 2020;
+export type ElectionYearString =
+  | "1996"
+  | "2000"
+  | "2004"
+  | "2008"
+  | "2012"
+  | "2016"
+  | "2020";
+
+// candidate
+export type Candidate = {
+  candidateId: string;
+  number: number;
+  candidateName1: string;
+  candidateName2: string;
+};
+const counties = voteResult.counties.map((county) => county.countyName);
+console.log(counties);
+export type County = (typeof counties)[number];
+
+export type ElectionFile = {
+  year: ElectionYear;
+  candidates: Candidate[];
+  voteResult: VoteResult;
+  countyVoteResult: CountyVoteResult[];
+  townsVoteResult: TownVoteResult[];
+};
 
 // election data unit
 export type ElectionDatum = {
   year: ElectionYear;
   disable: boolean;
-  candidates: string;
-  voteResult: string;
-  townsVoteResult: string;
+  data: string;
 };
 
 export type ElectionData = {
@@ -30,7 +56,6 @@ export type VoteResult = {
   totalVotes: number;
   totalElectors: number;
   votingRate: number;
-  counties: CountyVoteResult[];
 };
 
 export type CountyVoteResult = {

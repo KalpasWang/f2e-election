@@ -8,10 +8,10 @@ import {
   cn,
 } from "@nextui-org/react";
 import Logo from "@/components/logo";
-import { mantouSans } from "../layout";
-import Facebook from "./components/icons/facebook";
-import Instagram from "./components/icons/instagram";
-import Youtube from "./components/icons/youtube";
+import { mantouSans } from "../../../layout";
+import Facebook from "../icons/facebook";
+import Instagram from "../icons/instagram";
+import Youtube from "../icons/youtube";
 
 type Props = {};
 
