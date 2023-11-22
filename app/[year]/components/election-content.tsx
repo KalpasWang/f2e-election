@@ -10,8 +10,8 @@ type Props = {
 
 export default function ElectionContent({ data }: Props) {
   return (
-    <div className="w-full h-full bg-background flex">
-      <div className="basis-full lg:basis-3/12 min-w-[350px]">
+    <div className="block w-full h-full bg-background lg:flex">
+      <div className="basis-3/12 min-w-[350px]">
         <ParentSize>
           {({ width, height }) => <TaiwanMap width={width} height={height} />}
         </ParentSize>

@@ -91,6 +91,14 @@ export type CountyProperty = {
   countyEng: string;
 };
 
+export type CompBorderProperty = {
+  borderLevel: "county" | "town";
+  name: string;
+  id: string;
+  code: string;
+  eng: string;
+};
+
 export type TownProperty = {
   townId: string;
   townCode: string;
