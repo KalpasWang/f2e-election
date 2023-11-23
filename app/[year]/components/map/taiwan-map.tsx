@@ -1,12 +1,18 @@
 "use client";
-import React from "react";
-import { Zoom } from "@visx/zoom";
+import React, { useCallback } from "react";
+import {
+  Zoom,
+  composeMatrices,
+  createMatrix,
+  identityMatrix,
+} from "@visx/zoom";
 import { localPoint } from "@visx/event";
 import { cn } from "@nextui-org/react";
 import { compBorders, counties } from "@/utils/districtsGeoData";
 import { geoPath } from "d3-geo";
 import useElectionStore from "@/hooks/useElectionStore";
-import { County } from "@/types";
+import { County, CountyFeature } from "@/types";
+import { ProvidedZoom } from "@visx/zoom/lib/types";
 
 type Props = {
   width: number;
@@ -16,7 +22,36 @@ type Props = {
 function TaiwanMap({ width, height }: Props) {
   const store = useElectionStore();
   const path = geoPath().projection(null);
+
   console.log(store.selectedCounty);
+
+  const clickHandler = useCallback(
+    (
+      e: React.MouseEvent<SVGPathElement>,
+      feature: CountyFeature,
+      zoom: ProvidedZoom<SVGSVGElement>
+    ) => {
+      e.stopPropagation();
+      const [[x0, y0], [x1, y1]] = path.bounds(feature);
+      const scale = Math.min(
+        8,
+        0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)
+      );
+      store.setSelectedCounty(feature.properties.countyName as County);
+
+      const matrix = composeMatrices(
+        identityMatrix(),
+        createMatrix({ translateX: width / 2, translateY: height / 2 }),
+        createMatrix({ scaleX: scale, scaleY: scale }),
+        createMatrix({
+          translateX: -(x0 + x1) / 2.1,
+          translateY: -(y0 + y1) / 2,
+        })
+      );
+      zoom.setTransformMatrix(matrix);
+    },
+    [height, path, store, width]
+  );
 
   return (
     <Zoom<SVGSVGElement>
@@ -40,18 +75,14 @@ function TaiwanMap({ width, height }: Props) {
             )}
             ref={zoom.containerRef}
           >
-            <g transform={zoom.toString()}>
+            <g id="map-transform" transform={zoom.toString()}>
               {counties.features.map((feature, i) => {
                 return (
                   <path
                     key={i}
                     d={path(feature) || ""}
                     className="cursor-pointer stroke-1 stroke-black fill-slate-300"
-                    onClick={() =>
-                      store.setSelectedCounty(
-                        feature.properties.countyName as County
-                      )
-                    }
+                    onClick={(e) => clickHandler(e, feature, zoom)}
                   />
                 );
               })}
