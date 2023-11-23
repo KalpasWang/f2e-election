@@ -24,3 +24,7 @@
     @apply text-h6-mobile font-bold leading-normal sm:text-h6-desktop;
   }
 }
+
+#map-svg {
+  transition: 1s;
+}

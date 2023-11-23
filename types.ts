@@ -12,6 +12,34 @@ export type ElectionYearString =
   | "2016"
   | "2020";
 
+// district type
+export type County =
+  | "台北市"
+  | "新北市"
+  | "台中市"
+  | "桃園市"
+  | "台南市"
+  | "高雄市"
+  | "新竹縣"
+  | "苗栗縣"
+  | "彰化縣"
+  | "南投縣"
+  | "雲林縣"
+  | "嘉義縣"
+  | "屏東縣"
+  | "宜蘭縣"
+  | "花蓮縣"
+  | "台東縣"
+  | "澎湖縣"
+  | "基隆市"
+  | "新竹市"
+  | "嘉義市"
+  | "金門縣"
+  | "連江縣"
+  | "全部";
+
+export type Town = string;
+
 // candidate
 export type Candidate = {
   candidateId: string;
@@ -19,9 +47,6 @@ export type Candidate = {
   candidateName1: string;
   candidateName2: string;
 };
-const counties = voteResult.counties.map((county) => county.countyName);
-console.log(counties);
-export type County = (typeof counties)[number];
 
 export type ElectionFile = {
   year: ElectionYear;
@@ -43,7 +68,7 @@ export type ElectionData = {
 };
 
 // districts type
-export type District = "county" | "town";
+export type District = "nation" | "county" | "town";
 
 // election data type
 export type VoteResult = {
@@ -113,16 +138,6 @@ export type CountyFeatures = FeatureCollection<Geometry, CountyProperty>;
 export type TownFeatures = FeatureCollection<Geometry, TownProperty>;
 export type CountyFeature = Feature<Geometry, CountyProperty>;
 export type TownFeature = Feature<Geometry, TownProperty>;
-
-// map reducer type
-export type MapState = {
-  currentLevel: 0 | 1 | 2 | 3;
-  currentDistrict?: District;
-  selectedDistrict?: CountyFeature | TownFeature;
-  selectedCounty?: CountyFeature;
-  selectedTown?: TownFeature;
-  renderedTowns?: TownFeature[];
-};
 
 export type MapAction =
   | {

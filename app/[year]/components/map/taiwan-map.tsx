@@ -1,7 +1,12 @@
 "use client";
-import * as d3 from "d3";
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { Zoom } from "@visx/zoom";
+import { localPoint } from "@visx/event";
+import { cn } from "@nextui-org/react";
 import { compBorders, counties } from "@/utils/districtsGeoData";
+import { geoPath } from "d3-geo";
+import useElectionStore from "@/hooks/useElectionStore";
+import { County } from "@/types";
 
 type Props = {
   width: number;
@@ -9,83 +14,72 @@ type Props = {
 };
 
 function TaiwanMap({ width, height }: Props) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const countyRef = useRef<SVGGElement>(null);
-  const compBorderRef = useRef<SVGGElement>(null);
-  const countyBorderRef = useRef<SVGGElement>(null);
-  const townRef = useRef<SVGGElement>(null);
-  const path = d3.geoPath().projection(null);
-  const zoom = d3
-    .zoom<SVGSVGElement, unknown>()
-    .scaleExtent([1, 8])
-    .on("zoom", function (e: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
-      const svg = d3.select(this);
-      svg.attr("transform", e.transform.toString());
-      svg.attr("stroke-width", 1 / e.transform.k);
-      // svgRef.current?.setAttribute("transform", e.transform.toString());
-    });
-
-  function clicked(event: any, d: any) {
-    const [[x0, y0], [x1, y1]] = path.bounds(d);
-    event.stopPropagation();
-
-    // d3.select(this).transition().style("fill", "red");
-    const svg = d3.select(svgRef.current);
-    svg
-      .transition()
-      .duration(2000)
-      .call(
-        // @ts-ignore
-        zoom.transform,
-        d3.zoomIdentity
-          .translate(width / 2, height / 2)
-          .scale(
-            Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height))
-          )
-          .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-        d3.pointer(event, svg.node())
-      );
-  }
-
-  useEffect(() => {
-    // @ts-ignore
-    d3.select(svgRef.current).call(zoom);
-
-    d3.select(countyRef.current)
-      .selectAll("path")
-      .data(counties.features)
-      .join("path")
-      .on("click", (event, feature) => {})
-      .transition()
-      .duration(2000)
-      .attr("class", "stroke-primary stroke-1 fill-none")
-      .attr("d", (feature) => path(feature));
-
-    d3.select(compBorderRef.current)
-      .selectAll("path")
-      .data(compBorders.features)
-      .join("path")
-      .transition()
-      .duration(2000)
-      .attr("class", "fill-none stroke-2 stroke-black")
-      .attr("d", (feature) => path(feature));
-  }, [path, zoom]);
+  const store = useElectionStore();
+  const path = geoPath().projection(null);
+  console.log(store.selectedCounty);
 
   return (
-    <svg
-      id="map-svg"
+    <Zoom<SVGSVGElement>
       width={width}
       height={height}
-      ref={svgRef}
-      viewBox="0 0 450 600"
-      className="min-w-full"
+      scaleXMin={1}
+      scaleXMax={10}
+      scaleYMin={1}
+      scaleYMax={10}
     >
-      <g ref={countyRef}></g>
-      <g ref={compBorderRef}></g>
-      <g ref={countyBorderRef}></g>
-      <g ref={townRef}></g>
-    </svg>
+      {(zoom) => (
+        <div className="relative">
+          <svg
+            id="map-svg"
+            width={width}
+            height={height}
+            viewBox="0 0 450 600"
+            className={cn(
+              "min-w-full bg-[#e4faff] touch-none",
+              zoom.isDragging && "cursor-grabbing"
+            )}
+            ref={zoom.containerRef}
+          >
+            <g transform={zoom.toString()}>
+              {counties.features.map((feature, i) => {
+                return (
+                  <path
+                    key={i}
+                    d={path(feature) || ""}
+                    className="cursor-pointer stroke-1 stroke-black fill-slate-300"
+                    onClick={() =>
+                      store.setSelectedCounty(
+                        feature.properties.countyName as County
+                      )
+                    }
+                  />
+                );
+              })}
+            </g>
+            {/*             <rect
+              width={width}
+              height={height}
+              // rx={14}
+              fill="transparent"
+              onTouchStart={zoom.dragStart}
+              onTouchMove={zoom.dragMove}
+              onTouchEnd={zoom.dragEnd}
+              onMouseDown={zoom.dragStart}
+              onMouseMove={zoom.dragMove}
+              onMouseUp={zoom.dragEnd}
+              onMouseLeave={() => {
+                if (zoom.isDragging) zoom.dragEnd();
+              }}
+              onDoubleClick={(event) => {
+                const point = localPoint(event) || { x: 0, y: 0 };
+                zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
+              }}
+            /> */}
+          </svg>
+        </div>
+      )}
+    </Zoom>
   );
 }
 
-export default React.memo(TaiwanMap);
+export default TaiwanMap;

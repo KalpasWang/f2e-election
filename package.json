@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
+    "@visx/event": "^3.3.0",
     "@visx/responsive": "^3.3.0",
-    "d3": "^7.8.5",
+    "@visx/scale": "^3.5.0",
+    "@visx/zoom": "^3.3.0",
+    "d3-geo": "^3.1.0",
     "framer-motion": "^10.16.5",
     "geojson": "^0.5.0",
     "next": "14.0.3",
@@ -23,7 +26,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.3",
+    "@types/d3-geo": "^3.1.0",
     "@types/geojson": "^7946.0.13",
     "@types/node": "^20",
     "@types/react": "^18",
