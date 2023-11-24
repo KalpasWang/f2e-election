@@ -2,22 +2,29 @@
 import React from "react";
 import { ParentSize } from "@visx/responsive";
 import TaiwanMap from "./map/taiwan-map";
-import { ElectionFile } from "@/types";
+import { Topology } from "topojson-specification";
+import { ElectionYear } from "@/types";
+import ElectionChart from "./chart/election-chart";
 
 type Props = {
-  data: ElectionFile;
+  map: Topology;
+  year: ElectionYear;
 };
 
-export default function ElectionContent({ data }: Props) {
+export default function ElectionContent({ map, year }: Props) {
   return (
-    <div className="block w-full h-full bg-background lg:flex">
-      <div className="basis-3/12 min-w-[350px] min-h-[467px]">
+    <div className="w-full h-full bg-background lg:flex">
+      <div className="w-full h-[600px] lg:w-auto lg:h-auto lg:basis-4/12">
         <ParentSize>
-          {({ width, height }) => <TaiwanMap width={width} height={height} />}
+          {({ width, height }) => (
+            <TaiwanMap width={width} height={height} map={map} year={year} />
+          )}
         </ParentSize>
       </div>
       <div className="flex-grow">
-        <div className="bg-slate-400 flex justify-center items-center">kk</div>
+        <div className="bg-slate-400 flex justify-center items-center">
+          <ElectionChart />
+        </div>
       </div>
     </div>
   );

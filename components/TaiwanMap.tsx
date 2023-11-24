@@ -17,7 +17,7 @@ import {
   geoPath,
   geoProjection,
 } from "d3-geo";
-import { counties, towns } from "@/utils/districtsGeoData";
+import { counties, towns } from "@/utils/getDistrictsGeoData";
 import {
   getBlueWinCountys,
   getGreenWinCountys,

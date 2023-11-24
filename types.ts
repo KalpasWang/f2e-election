@@ -46,21 +46,21 @@ export type Candidate = {
   number: number;
   candidateName1: string;
   candidateName2: string;
+  party: "國民黨" | "民進黨" | "親民黨";
 };
 
-export type ElectionFile = {
+export type ElectionResult = {
   year: ElectionYear;
   candidates: Candidate[];
   voteResult: VoteResult;
   countyVoteResult: CountyVoteResult[];
   townsVoteResult: TownVoteResult[];
-};
+}[];
 
 // election data unit
 export type ElectionDatum = {
   year: ElectionYear;
   disable: boolean;
-  data: string;
 };
 
 export type ElectionData = {
@@ -138,16 +138,3 @@ export type CountyFeatures = FeatureCollection<Geometry, CountyProperty>;
 export type TownFeatures = FeatureCollection<Geometry, TownProperty>;
 export type CountyFeature = Feature<Geometry, CountyProperty>;
 export type TownFeature = Feature<Geometry, TownProperty>;
-
-export type MapAction =
-  | {
-      type: "goto";
-      payload:
-        | { type: "county"; feature: CountyFeature }
-        | { type: "town"; feature: TownFeature };
-    }
-  | {
-      type: "up";
-    };
-
-export type TooltipDataType = string;

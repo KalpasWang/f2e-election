@@ -50,6 +50,9 @@ const config: Config = {
       fontFamily: {
         TC: ["'Noto Sans TC'", "sans-serif"],
       },
+      strokeWidth: {
+        "1/2": "0.5",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

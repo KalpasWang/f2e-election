@@ -1,29 +1,101 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useReducer } from "react";
 import {
   Zoom,
   composeMatrices,
   createMatrix,
   identityMatrix,
 } from "@visx/zoom";
-import { localPoint } from "@visx/event";
 import { cn } from "@nextui-org/react";
-import { compBorders, counties } from "@/utils/districtsGeoData";
 import { geoPath } from "d3-geo";
-import useElectionStore from "@/hooks/useElectionStore";
-import { County, CountyFeature } from "@/types";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
+import { Topology } from "topojson-specification";
+import useElectionStore from "@/hooks/useElectionStore";
+import getDistrictsGeoData from "@/utils/getDistrictsGeoData";
+import { County, CountyFeature, ElectionYear, TownFeature } from "@/types";
+import { getTransformMatrix } from "@/utils/helpers";
+import { feature } from "topojson-client";
 
 type Props = {
   width: number;
   height: number;
+  map: Topology;
+  year: ElectionYear;
 };
 
-function TaiwanMap({ width, height }: Props) {
-  const store = useElectionStore();
-  const path = geoPath().projection(null);
+type MapState = {
+  selectedDistrictFeature?: CountyFeature | TownFeature;
+  selectedCountyFeature?: CountyFeature;
+  selectedTownFeature?: TownFeature;
+  renderedTownsFeature?: TownFeature[];
+};
 
-  console.log(store.selectedCounty);
+type MapAction =
+  | {
+      type: "selectCounty";
+      payload: { county: CountyFeature; towns: TownFeature[] };
+    }
+  | {
+      type: "selectTown";
+      payload: { town: TownFeature };
+    }
+  | { type: "reset" };
+
+// function filterTownFeatures(county: CountyFeature): TownFeature[] {
+//   return towns.features.filter(
+//     (f) => f.properties.countyId === county.properties.countyId
+//   );
+// }
+
+function mapReducer(state: MapState, action: MapAction): MapState {
+  switch (action.type) {
+    case "selectCounty": {
+      const { county, towns } = action.payload;
+      return {
+        selectedDistrictFeature: county,
+        selectedCountyFeature: county,
+        selectedTownFeature: undefined,
+        renderedTownsFeature: towns,
+      };
+    }
+    case "selectTown": {
+      const { town } = action.payload;
+      return {
+        ...state,
+        selectedDistrictFeature: town,
+        selectedTownFeature: town,
+      };
+    }
+    case "reset": {
+      return {
+        selectedDistrictFeature: undefined,
+        selectedCountyFeature: undefined,
+        selectedTownFeature: undefined,
+        renderedTownsFeature: undefined,
+      };
+    }
+    default:
+      return state;
+  }
+}
+
+function TaiwanMap({ width, height, map, year }: Props) {
+  const store = useElectionStore();
+  const [state, dispatch] = useReducer(mapReducer, {});
+  const path = geoPath().projection(null);
+  const { counties, towns, compBorders } = getDistrictsGeoData(map);
+
+  // console.log(store);
+  // console.log(state);
+
+  const filterTownFeatures = useCallback(
+    (county: CountyFeature): TownFeature[] => {
+      return towns.features.filter(
+        (f) => f.properties.countyId === county.properties.countyId
+      );
+    },
+    [towns]
+  );
 
   const clickHandler = useCallback(
     (
@@ -32,25 +104,14 @@ function TaiwanMap({ width, height }: Props) {
       zoom: ProvidedZoom<SVGSVGElement>
     ) => {
       e.stopPropagation();
-      const [[x0, y0], [x1, y1]] = path.bounds(feature);
-      const scale = Math.min(
-        8,
-        0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)
-      );
-      store.setSelectedCounty(feature.properties.countyName as County);
+      const matrix = getTransformMatrix(path.bounds(feature), width, height);
+      const towns = filterTownFeatures(feature);
 
-      const matrix = composeMatrices(
-        identityMatrix(),
-        createMatrix({ translateX: width / 2, translateY: height / 2 }),
-        createMatrix({ scaleX: scale, scaleY: scale }),
-        createMatrix({
-          translateX: -(x0 + x1) / 2.1,
-          translateY: -(y0 + y1) / 2,
-        })
-      );
+      store.setSelectedCounty(feature.properties.countyName as County);
+      dispatch({ type: "selectCounty", payload: { county: feature, towns } });
       zoom.setTransformMatrix(matrix);
     },
-    [height, path, store, width]
+    [height, path, store, width, filterTownFeatures]
   );
 
   return (
@@ -58,9 +119,9 @@ function TaiwanMap({ width, height }: Props) {
       width={width}
       height={height}
       scaleXMin={1}
-      scaleXMax={10}
+      scaleXMax={100}
       scaleYMin={1}
-      scaleYMax={10}
+      scaleYMax={100}
     >
       {(zoom) => (
         <div className="relative">
@@ -76,16 +137,29 @@ function TaiwanMap({ width, height }: Props) {
             ref={zoom.containerRef}
           >
             <g id="map-transform" transform={zoom.toString()}>
+              {/* render countys */}
               {counties.features.map((feature, i) => {
                 return (
                   <path
                     key={i}
                     d={path(feature) || ""}
-                    className="cursor-pointer stroke-1 stroke-black fill-slate-300"
+                    className="cursor-pointer stroke-1/2 stroke-slate-500 fill-slate-300"
                     onClick={(e) => clickHandler(e, feature, zoom)}
                   />
                 );
               })}
+
+              {/* render towns */}
+              {state.renderedTownsFeature &&
+                state.renderedTownsFeature.map((feature, i) => {
+                  return (
+                    <path
+                      key={i}
+                      d={path(feature) || ""}
+                      className="cursor-pointer stroke-1/2 stroke-slate-500 fill-slate-300"
+                    />
+                  );
+                })}
             </g>
             {/*             <rect
               width={width}
