@@ -1,25 +1,17 @@
 "use client";
 import React, { useCallback, useReducer } from "react";
-import {
-  Zoom,
-  composeMatrices,
-  createMatrix,
-  identityMatrix,
-} from "@visx/zoom";
+import { Zoom } from "@visx/zoom";
 import { cn } from "@nextui-org/react";
 import { geoPath } from "d3-geo";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
-import { Topology } from "topojson-specification";
 import useElectionStore from "@/hooks/useElectionStore";
-import getDistrictsGeoData from "@/utils/getDistrictsGeoData";
+import { counties, compBorders, towns, electionResult } from "@/data";
+import { filterTownFeatures, getTransformMatrix } from "@/utils/helpers";
 import { County, CountyFeature, ElectionYear, TownFeature } from "@/types";
-import { getTransformMatrix } from "@/utils/helpers";
-import { feature } from "topojson-client";
 
 type Props = {
   width: number;
   height: number;
-  map: Topology;
   year: ElectionYear;
 };
 
@@ -40,12 +32,6 @@ type MapAction =
       payload: { town: TownFeature };
     }
   | { type: "reset" };
-
-// function filterTownFeatures(county: CountyFeature): TownFeature[] {
-//   return towns.features.filter(
-//     (f) => f.properties.countyId === county.properties.countyId
-//   );
-// }
 
 function mapReducer(state: MapState, action: MapAction): MapState {
   switch (action.type) {
@@ -79,24 +65,22 @@ function mapReducer(state: MapState, action: MapAction): MapState {
   }
 }
 
-function TaiwanMap({ width, height, map, year }: Props) {
+function TaiwanMap({ width, height, year }: Props) {
   const store = useElectionStore();
   const [state, dispatch] = useReducer(mapReducer, {});
   const path = geoPath().projection(null);
-  const { counties, towns, compBorders } = getDistrictsGeoData(map);
+  const electionData = electionResult.find((item) => item.year === +year);
+  if (!electionData) {
+    console.error(`Election data in year: ${year} not found`);
+    return;
+  }
+  const { candidates, voteResult, countyVoteResult, townsVoteResult } =
+    electionData;
 
   // console.log(store);
   // console.log(state);
 
-  const filterTownFeatures = useCallback(
-    (county: CountyFeature): TownFeature[] => {
-      return towns.features.filter(
-        (f) => f.properties.countyId === county.properties.countyId
-      );
-    },
-    [towns]
-  );
-
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const clickHandler = useCallback(
     (
       e: React.MouseEvent<SVGPathElement>,
@@ -109,9 +93,12 @@ function TaiwanMap({ width, height, map, year }: Props) {
 
       store.setSelectedCounty(feature.properties.countyName as County);
       dispatch({ type: "selectCounty", payload: { county: feature, towns } });
-      zoom.setTransformMatrix(matrix);
+      zoom.reset();
+      setTimeout(() => {
+        zoom.setTransformMatrix(matrix);
+      }, 0);
     },
-    [height, path, store, width, filterTownFeatures]
+    [height, path, store, width]
   );
 
   return (

@@ -10,7 +10,10 @@ import {
   District,
   VoteResult,
   TownVoteResult,
+  CountyFeature,
+  TownFeature,
 } from "@/types";
+import { towns } from "@/data";
 
 export function getTransformMatrix(
   bounds: [[number, number], [number, number]],
@@ -18,15 +21,21 @@ export function getTransformMatrix(
   height: number
 ) {
   const [[x0, y0], [x1, y1]] = bounds;
-  const scale = 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height);
+  const scale = 0.7 / Math.max((x1 - x0) / width, (y1 - y0) / height);
 
   const matrix = composeMatrices(
     identityMatrix(),
     translateMatrix(width / 2, height / 2),
     scaleMatrix(scale, scale),
-    translateMatrix(-(x0 + x1) / 2.1, -(y0 + y1) / 2.1)
+    translateMatrix(-(x0 + x1) / 2, -(y0 + y1) / 2)
   );
   return matrix;
+}
+
+export function filterTownFeatures(county: CountyFeature): TownFeature[] {
+  return towns.features.filter(
+    (f) => f.properties.countyId === county.properties.countyId
+  );
 }
 
 /* export function getGreenWinCountys(data: VoteResult) {
