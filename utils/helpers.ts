@@ -12,6 +12,8 @@ import {
   TownVoteResult,
   CountyFeature,
   TownFeature,
+  VillageVoteResult,
+  CandidateId,
 } from "@/types";
 import { towns } from "@/data";
 
@@ -36,6 +38,19 @@ export function filterTownFeatures(county: CountyFeature): TownFeature[] {
   return towns.features.filter(
     (f) => f.properties.countyId === county.properties.countyId
   );
+}
+
+export function getWinCandidateId(
+  district: CountyVoteResult | TownVoteResult | VillageVoteResult
+): CandidateId {
+  const num = Math.max(
+    district.candidate1,
+    district.candidate2,
+    district.candidate3
+  );
+  if (num === district.candidate1) return "candidate1";
+  else if (num === district.candidate2) return "candidate2";
+  else return "candidate3";
 }
 
 /* export function getGreenWinCountys(data: VoteResult) {

@@ -1,29 +1,32 @@
 [
   {
     "year": 2020,
-    "candidates": [
-      {
+    "candidates": {
+      "candidate1": {
         "candidateId": "candidate1",
         "number": 1,
         "candidateName1": "宋楚瑜",
         "candidateName2": "余湘",
-        "party": "親民黨"
+        "party": "親民黨",
+        "partyAlias": "orange"
       },
-      {
+      "candidate2": {
         "candidateId": "candidate2",
         "number": 2,
         "candidateName1": "韓國瑜",
         "candidateName2": "張善政",
-        "party": "國民黨"
+        "party": "國民黨",
+        "partyAlias": "blue"
       },
-      {
+      "candidate3": {
         "candidateId": "candidate3",
         "number": 3,
         "candidateName1": "蔡英文",
         "candidateName2": "賴清德",
-        "party": "民進黨"
+        "party": "民進黨",
+        "partyAlias": "green"
       }
-    ],
+    },
     "voteResult": {
       "electionRegion": "全國",
       "candidate1": 608590,
@@ -105427,31 +105430,34 @@
   },
   {
     "year": 2016,
-    "candidates": [
-      {
+    "candidates": {
+      "candidate1": {
         "candidateId": "candidate1",
         "number": 1,
         "candidateName1": "朱立倫",
         "candidateName2": "王如玄",
-        "party": "國民黨"
+        "party": "國民黨",
+        "partyAlias": "blue"
       },
-      {
+      "candidate2": {
         "candidateId": "candidate2",
         "number": 2,
         "candidateName1": "蔡英文",
         "candidateName2": "陳建仁",
-        "party": "民進黨"
+        "party": "民進黨",
+        "partyAlias": "green"
       },
-      {
+      "candidate3": {
         "candidateId": "candidate3",
         "number": 3,
         "candidateName1": "宋楚瑜",
         "candidateName2": "徐欣瑩",
-        "party": "親民黨"
+        "party": "親民黨",
+        "partyAlias": "orange"
       }
-    ],
+    },
     "voteResult": {
-      "countyName": "總計",
+      "electionRegion": "全國",
       "candidate1": 3813365,
       "candidate2": 6894744,
       "candidate3": 1576861,

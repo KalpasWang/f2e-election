@@ -6,8 +6,19 @@ import { geoPath } from "d3-geo";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 import useElectionStore from "@/hooks/useElectionStore";
 import { counties, compBorders, towns, electionResult } from "@/data";
-import { filterTownFeatures, getTransformMatrix } from "@/utils/helpers";
-import { County, CountyFeature, ElectionYear, TownFeature } from "@/types";
+import {
+  filterTownFeatures,
+  getTransformMatrix,
+  getWinCandidateId,
+} from "@/utils/helpers";
+import {
+  County,
+  CountyFeature,
+  DistrictColor,
+  ElectionYear,
+  PartyColor,
+  TownFeature,
+} from "@/types";
 
 type Props = {
   width: number;
@@ -72,15 +83,53 @@ function TaiwanMap({ width, height, year }: Props) {
   const electionData = electionResult.find((item) => item.year === +year);
   if (!electionData) {
     console.error(`Election data in year: ${year} not found`);
-    return;
   }
-  const { candidates, voteResult, countyVoteResult, townsVoteResult } =
-    electionData;
+  const { candidates, countyVoteResult, townsVoteResult } = electionData!;
+
+  const getWinParty = useCallback(
+    (
+      district: { county: County; town?: string; village?: string },
+      type: "county" | "town" | "village"
+    ): PartyColor => {
+      if (type === "county") {
+        const county = countyVoteResult.find(
+          (item) => item.countyName === district.county
+        );
+        if (!county) {
+          return "grey";
+        }
+        const id = getWinCandidateId(county);
+        const color = candidates[id].partyAlias;
+        return color;
+      }
+      if (type === "town") {
+        const town = townsVoteResult.find(
+          (item) =>
+            item.countyName === district.county &&
+            item.townName === district.town
+        );
+        if (!town) {
+          return "grey";
+        }
+        const id = getWinCandidateId(town);
+        const color = candidates[id].partyAlias;
+        return color;
+      }
+      return "grey";
+    },
+    [candidates, countyVoteResult, townsVoteResult]
+  );
+
+  const districtColor: DistrictColor = {
+    green: "fill-green-500",
+    blue: "fill-blue-500",
+    orange: "fill-orange-500",
+    grey: "fill-slate-500",
+  };
 
   // console.log(store);
   // console.log(state);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const clickHandler = useCallback(
     (
       e: React.MouseEvent<SVGPathElement>,
@@ -130,11 +179,28 @@ function TaiwanMap({ width, height, year }: Props) {
                   <path
                     key={i}
                     d={path(feature) || ""}
-                    className="cursor-pointer stroke-1/2 stroke-slate-500 fill-slate-300"
+                    className={cn(
+                      "cursor-pointer stroke-1/2 stroke-slate-100",
+                      districtColor[
+                        getWinParty(
+                          { county: feature.properties.countyName },
+                          "county"
+                        )
+                      ]
+                    )}
                     onClick={(e) => clickHandler(e, feature, zoom)}
                   />
                 );
               })}
+
+              {/* render compBorders */}
+              {compBorders.features.map((feature, i) => (
+                <path
+                  key={i}
+                  d={path(feature) || ""}
+                  className="stroke-1 stroke-slate-800 fill-none"
+                />
+              ))}
 
               {/* render towns */}
               {state.renderedTownsFeature &&
@@ -143,7 +209,18 @@ function TaiwanMap({ width, height, year }: Props) {
                     <path
                       key={i}
                       d={path(feature) || ""}
-                      className="cursor-pointer stroke-1/2 stroke-slate-500 fill-slate-300"
+                      className={cn(
+                        "cursor-pointer stroke-1/2 stroke-slate-100",
+                        districtColor[
+                          getWinParty(
+                            {
+                              county: feature.properties.countyName,
+                              town: feature.properties.townName,
+                            },
+                            "town"
+                          )
+                        ]
+                      )}
                     />
                   );
                 })}

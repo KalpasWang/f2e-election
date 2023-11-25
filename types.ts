@@ -40,18 +40,27 @@ export type County =
 
 export type Town = string;
 
+export type PartyColor = "blue" | "green" | "orange" | "grey";
+export type DistrictColor = {
+  [color in PartyColor]: string;
+};
+
 // candidate
+export type CandidateId = "candidate1" | "candidate2" | "candidate3";
 export type Candidate = {
-  candidateId: string;
+  candidateId: CandidateId;
   number: number;
   candidateName1: string;
   candidateName2: string;
-  party: "國民黨" | "民進黨" | "親民黨";
+  party: "國民黨" | "民進黨" | "親民黨" | "無黨籍";
+  partyAlias: PartyColor;
 };
 
 export type ElectionResult = {
   year: ElectionYear;
-  candidates: Candidate[];
+  candidates: {
+    [c in CandidateId]: Candidate;
+  };
   voteResult: VoteResult;
   countyVoteResult: CountyVoteResult[];
   townsVoteResult: TownVoteResult[];
@@ -84,7 +93,7 @@ export type VoteResult = {
 };
 
 export type CountyVoteResult = {
-  countyName: string;
+  countyName: County;
   candidate1: number;
   candidate2: number;
   candidate3: number;
@@ -96,8 +105,22 @@ export type CountyVoteResult = {
 };
 
 export type TownVoteResult = {
-  countyName: string;
+  countyName: County;
   townName: string;
+  candidate1: number;
+  candidate2: number;
+  candidate3: number;
+  validVotes: number;
+  invalidVotes: number;
+  totalVotes: number;
+  totalElectors: number;
+  votingRate: number;
+};
+
+export type VillageVoteResult = {
+  countyName: County;
+  townName: string;
+  villageName: string;
   candidate1: number;
   candidate2: number;
   candidate3: number;
@@ -111,7 +134,7 @@ export type TownVoteResult = {
 // Map type
 export type CountyProperty = {
   countyId: string;
-  countyName: string;
+  countyName: County;
   countyCode: string;
   countyEng: string;
 };
@@ -127,7 +150,7 @@ export type CompBorderProperty = {
 export type TownProperty = {
   townId: string;
   townCode: string;
-  countyName: string;
+  countyName: County;
   townName: string;
   townEng: string;
   countyId: string;
