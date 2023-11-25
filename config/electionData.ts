@@ -1,4 +1,9 @@
-import { ElectionData, ElectionDatum, ElectionYear } from "@/types";
+import {
+  ElectionData,
+  ElectionDatum,
+  ElectionYear,
+  ElectionYearString,
+} from "@/types";
 
 export const electionData: ElectionData = {
   1996: {
@@ -23,7 +28,7 @@ export const electionData: ElectionData = {
   },
   2016: {
     year: 2016,
-    disable: true,
+    disable: false,
   },
   2020: {
     year: 2020,
@@ -31,7 +36,5 @@ export const electionData: ElectionData = {
   },
 };
 
-export const electionYears = Object.keys(electionData).map(
-  (y) => +y
-) as ElectionYear[];
+export const electionYears = Object.keys(electionData) as ElectionYearString[];
 export const electionDataArray = Object.values(electionData);

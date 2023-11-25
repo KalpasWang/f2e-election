@@ -1,6 +1,7 @@
 import Logo from "@/components/logo";
-import { electionYears } from "@/config/electionData";
+import { electionData, electionYears } from "@/config/electionData";
 import { Button, Image, cn } from "@nextui-org/react";
+import NextImage from "next/image";
 import NextLink from "next/link";
 import { mantouSans } from "./layout";
 
@@ -24,6 +25,7 @@ export default function Home() {
               href={`/${year}`}
               color="default"
               radius="full"
+              isDisabled={electionData[year].disable}
             >
               {year}
             </Button>
@@ -32,6 +34,8 @@ export default function Home() {
       </div>
       <div className="flex flex-nowrap justify-between w-full">
         <Image
+          as={NextImage}
+          priority
           src="/role1.webp"
           alt="背景人物1"
           width={256}
@@ -42,6 +46,8 @@ export default function Home() {
           }}
         />
         <Image
+          as={NextImage}
+          priority
           src="/role2.webp"
           alt="背景人物2"
           width={256}
@@ -52,6 +58,8 @@ export default function Home() {
           }}
         />
         <Image
+          as={NextImage}
+          priority
           src="/role3.webp"
           alt="背景人物3"
           width={256}
@@ -61,6 +69,8 @@ export default function Home() {
           }}
         />
         <Image
+          as={NextImage}
+          priority
           src="/role4.webp"
           alt="背景人物4"
           width={256}
@@ -70,6 +80,8 @@ export default function Home() {
           }}
         />
         <Image
+          as={NextImage}
+          priority
           src="/role5.webp"
           alt="背景人物5"
           width={256}
@@ -79,6 +91,8 @@ export default function Home() {
           }}
         />
         <Image
+          as={NextImage}
+          priority
           src="/role6.webp"
           alt="背景人物6"
           width={256}

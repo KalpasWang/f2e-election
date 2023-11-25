@@ -64,7 +64,7 @@ export type ElectionDatum = {
 };
 
 export type ElectionData = {
-  [year in ElectionYear]: ElectionDatum;
+  [year in ElectionYearString]: ElectionDatum;
 };
 
 // districts type
