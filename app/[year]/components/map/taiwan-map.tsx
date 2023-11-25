@@ -10,7 +10,7 @@ import {
   filterTownFeatures,
   getTransformMatrix,
   getWinCandidateId,
-} from "@/utils/helpers";
+} from "./helpers";
 import {
   County,
   CountyFeature,
@@ -121,10 +121,10 @@ function TaiwanMap({ width, height, year }: Props) {
   );
 
   const districtColor: DistrictColor = {
-    green: "fill-green-500",
-    blue: "fill-blue-500",
-    orange: "fill-orange-500",
-    grey: "fill-slate-500",
+    green: "fill-green-400",
+    blue: "fill-blue-400",
+    orange: "fill-orange-400",
+    grey: "fill-slate-400",
   };
 
   // console.log(store);
