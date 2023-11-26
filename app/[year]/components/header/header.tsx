@@ -13,6 +13,7 @@ import Facebook from "../icons/facebook";
 import Instagram from "../icons/instagram";
 import Youtube from "../icons/youtube";
 import YearDropdown from "./year-dropdown";
+import DistrictDropdown from "./district-dropdown";
 
 type Props = {};
 
@@ -32,10 +33,12 @@ export default function Header({}: Props) {
             台灣歷年總統 都幾?
           </Link>
         </NavbarBrand>
-        <NavbarItem className="mr-16">
-          <YearDropdown />
+        <NavbarItem className="flex flex-nowrap items-center gap-16">
+          <>
+            <YearDropdown />
+            <DistrictDropdown />
+          </>
         </NavbarItem>
-        <NavbarItem>{/* 選擇地區 */}</NavbarItem>
       </NavbarContent>
 
       <NavbarContent justify="end" className="gap-16">

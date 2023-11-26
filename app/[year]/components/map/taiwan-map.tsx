@@ -77,7 +77,13 @@ function mapReducer(state: MapState, action: MapAction): MapState {
 }
 
 function TaiwanMap({ width, height, year }: Props) {
-  const store = useElectionStore();
+  const store = useElectionStore((state) => ({
+    currentDistrict: state.currentDistrict,
+    selectedCounty: state.selectedCounty,
+    selectedTown: state.selectedTown,
+    setSelectedCounty: state.setSelectedCounty,
+    setSelectedTown: state.setSelectedTown,
+  }));
   const [state, dispatch] = useReducer(mapReducer, {});
   const path = geoPath().projection(null);
   const electionData = electionResult.find((item) => item.year === +year);

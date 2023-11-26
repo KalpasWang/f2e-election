@@ -11,13 +11,11 @@ import {
 import useElectionStore from "@/hooks/useElectionStore";
 import { electionDataArray } from "@/config/electionData";
 import ArrowDown from "../icons/arrow-down";
-import Check from "../icons/check";
-// import { ElectionYear } from "@/types";
 
 type Props = {};
 
 export default function YearDropdown({}: Props) {
-  const isLoaded = useElectionStore((store) => store.isLoaded);
+  const isLoaded = useElectionStore((state) => state.isLoaded);
   const pathname = usePathname();
   const year = pathname.slice(1);
 
@@ -36,6 +34,7 @@ export default function YearDropdown({}: Props) {
           </Button>
         </DropdownTrigger>
         <DropdownMenu
+          aria-label="選擇年份"
           variant="flat"
           classNames={{
             list: "bg-background text-foreground rounded",

@@ -29,7 +29,8 @@
   transition: 1s;
 }
 
-ul[data-slot="list"] > a {
+ul[data-slot="list"] > a,
+ul[data-slot="list"] > li {
   font-size: 1rem;
   padding: 8px;
 }
