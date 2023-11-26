@@ -28,3 +28,8 @@
 #map-transform {
   transition: 1s;
 }
+
+ul[data-slot="list"] > a {
+  font-size: 1rem;
+  padding: 8px;
+}

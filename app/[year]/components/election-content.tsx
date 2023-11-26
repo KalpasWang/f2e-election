@@ -1,16 +1,23 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { ParentSize } from "@visx/responsive";
-import { Topology } from "topojson-specification";
+import useElectionStore from "@/hooks/useElectionStore";
 import TaiwanMap from "./map/taiwan-map";
-import { ElectionYear } from "@/types";
 import ElectionChart from "./chart/election-chart";
+import { ElectionYear } from "@/types";
 
 type Props = {
   year: ElectionYear;
 };
 
 export default function ElectionContent({ year }: Props) {
+  const setIsLoaded = useElectionStore((state) => state.setIsLoaded);
+
+  useEffect(() => {
+    setIsLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="w-full h-full bg-background lg:flex">
       <div className="w-full h-[600px] lg:w-auto lg:h-auto lg:basis-4/12">

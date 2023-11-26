@@ -51,6 +51,9 @@ const config: Config = {
         TC: ["'Noto Sans TC'", "sans-serif"],
       },
       strokeWidth: {
+        "1/10": "0.1",
+        "1/5": "0.2",
+        "1/4": "0.25",
         "1/2": "0.5",
       },
       backgroundImage: {

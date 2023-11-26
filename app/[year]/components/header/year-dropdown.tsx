@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import { usePathname } from "next/navigation";
 import {
   Dropdown,
   DropdownTrigger,
@@ -6,39 +8,48 @@ import {
   DropdownItem,
   Button,
 } from "@nextui-org/react";
+import useElectionStore from "@/hooks/useElectionStore";
+import { electionDataArray } from "@/config/electionData";
+import ArrowDown from "../icons/arrow-down";
+import Check from "../icons/check";
+// import { ElectionYear } from "@/types";
 
 type Props = {};
 
 export default function YearDropdown({}: Props) {
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["text"]));
-
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
+  const isLoaded = useElectionStore((store) => store.isLoaded);
+  const pathname = usePathname();
+  const year = pathname.slice(1);
 
   return (
     <div className="inline">
       <h6 className="inline-block text-content1 pr-16">選擇年份</h6>
       <Dropdown>
         <DropdownTrigger>
-          <Button variant="bordered" className="capitalize">
-            {selectedValue}
+          <Button
+            isDisabled={!isLoaded}
+            color="default"
+            radius="full"
+            endContent={<ArrowDown />}
+          >
+            {year}
           </Button>
         </DropdownTrigger>
         <DropdownMenu
-          aria-label="Single selection example"
           variant="flat"
+          classNames={{
+            list: "bg-background text-foreground rounded",
+          }}
           disallowEmptySelection
           selectionMode="single"
-          selectedKeys={selectedKeys}
-          // onSelectionChange={setSelectedKeys}
         >
-          <DropdownItem key="text">Text</DropdownItem>
-          <DropdownItem key="number">Number</DropdownItem>
-          <DropdownItem key="date">Date</DropdownItem>
-          <DropdownItem key="single_date">Single Date</DropdownItem>
-          <DropdownItem key="iteration">Iteration</DropdownItem>
+          {electionDataArray
+            .filter((d) => !d.disable)
+            .map((data) => (
+              <DropdownItem key={data.year} href={`/${data.year}`}>
+                {data.year}
+              </DropdownItem>
+            ))}
         </DropdownMenu>
       </Dropdown>
     </div>

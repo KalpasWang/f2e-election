@@ -12,6 +12,7 @@ import { mantouSans } from "../../../layout";
 import Facebook from "../icons/facebook";
 import Instagram from "../icons/instagram";
 import Youtube from "../icons/youtube";
+import YearDropdown from "./year-dropdown";
 
 type Props = {};
 
@@ -31,7 +32,9 @@ export default function Header({}: Props) {
             台灣歷年總統 都幾?
           </Link>
         </NavbarBrand>
-        <NavbarItem>{/* 選擇年分 */}</NavbarItem>
+        <NavbarItem className="mr-16">
+          <YearDropdown />
+        </NavbarItem>
         <NavbarItem>{/* 選擇地區 */}</NavbarItem>
       </NavbarContent>
 
