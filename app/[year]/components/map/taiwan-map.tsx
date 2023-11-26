@@ -1,5 +1,11 @@
 "use client";
-import React, { useCallback, useReducer } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from "react";
 import { Zoom } from "@visx/zoom";
 import { cn } from "@nextui-org/react";
 import { geoPath } from "d3-geo";
@@ -8,6 +14,7 @@ import useElectionStore from "@/hooks/useElectionStore";
 import { counties, compBorders, towns, electionResult } from "@/data";
 import {
   filterTownFeatures,
+  getInitialMatrix,
   getTransformMatrix,
   getWinCandidateId,
 } from "./helpers";
@@ -86,6 +93,7 @@ function TaiwanMap({ width, height, year }: Props) {
   }));
   const [state, dispatch] = useReducer(mapReducer, {});
   const path = geoPath().projection(null);
+  const zoomRef = useRef<ProvidedZoom<SVGSVGElement>>();
   const electionData = electionResult.find((item) => item.year === +year);
   if (!electionData) {
     console.error(`Election data in year: ${year} not found`);
@@ -137,24 +145,38 @@ function TaiwanMap({ width, height, year }: Props) {
   // console.log(state);
 
   const clickHandler = useCallback(
-    (
-      e: React.MouseEvent<SVGPathElement>,
-      feature: CountyFeature,
-      zoom: ProvidedZoom<SVGSVGElement>
-    ) => {
-      e.stopPropagation();
+    (feature: CountyFeature, e?: React.MouseEvent<SVGPathElement>) => {
+      e?.stopPropagation();
       const matrix = getTransformMatrix(path.bounds(feature), width, height);
       const towns = filterTownFeatures(feature);
 
       store.setSelectedCounty(feature.properties.countyName as County);
       dispatch({ type: "selectCounty", payload: { county: feature, towns } });
-      zoom.reset();
-      setTimeout(() => {
-        zoom.setTransformMatrix(matrix);
-      }, 0);
+      zoomRef.current?.setTransformMatrix(matrix);
     },
     [height, path, store, width]
   );
+
+  useEffect(() => {
+    if (
+      store.selectedCounty !==
+        state.selectedCountyFeature?.properties.countyName ||
+      store.selectedTown !== state.selectedTownFeature?.properties.townName
+    ) {
+      const county = counties.features.find(
+        (feature) => feature.properties.countyName === store.selectedCounty
+      );
+      if (!county) {
+        zoomRef.current?.reset();
+        return;
+      }
+      const matrix = getTransformMatrix(path.bounds(county), width, height);
+      const towns = filterTownFeatures(county);
+
+      dispatch({ type: "selectCounty", payload: { county, towns } });
+      zoomRef.current?.setTransformMatrix(matrix);
+    }
+  }, [state, store, width, height, clickHandler, path]);
 
   return (
     <Zoom<SVGSVGElement>
@@ -165,52 +187,24 @@ function TaiwanMap({ width, height, year }: Props) {
       scaleYMin={1}
       scaleYMax={100}
     >
-      {(zoom) => (
-        <div className="relative">
-          <svg
-            id="map-svg"
-            width={width}
-            height={height}
-            viewBox="0 0 450 600"
-            className={cn(
-              "min-w-full bg-[#e4faff] touch-none",
-              zoom.isDragging && "cursor-grabbing"
-            )}
-            ref={zoom.containerRef}
-          >
-            <g id="map-transform" transform={zoom.toString()}>
-              {/* render countys */}
-              {counties.features.map((feature, i) => {
-                return (
-                  <path
-                    key={i}
-                    d={path(feature) || ""}
-                    className={cn(
-                      "cursor-pointer stroke-1/2 stroke-slate-100",
-                      districtColor[
-                        getWinParty(
-                          { county: feature.properties.countyName },
-                          "county"
-                        )
-                      ]
-                    )}
-                    onClick={(e) => clickHandler(e, feature, zoom)}
-                  />
-                );
-              })}
-
-              {/* render compBorders */}
-              {compBorders.features.map((feature, i) => (
-                <path
-                  key={i}
-                  d={path(feature) || ""}
-                  className="stroke-1 stroke-slate-800 fill-none"
-                />
-              ))}
-
-              {/* render towns */}
-              {state.renderedTownsFeature &&
-                state.renderedTownsFeature.map((feature, i) => {
+      {(zoom) => {
+        zoomRef.current = zoom;
+        return (
+          <div className="relative">
+            <svg
+              id="map-svg"
+              width={width}
+              height={height}
+              viewBox="0 0 450 600"
+              className={cn(
+                "min-w-full bg-[#e4faff] touch-none",
+                zoom.isDragging && "cursor-grabbing"
+              )}
+              ref={zoom.containerRef}
+            >
+              <g id="map-transform" transform={zoom.toString()}>
+                {/* render countys */}
+                {counties.features.map((feature, i) => {
                   return (
                     <path
                       key={i}
@@ -219,19 +213,49 @@ function TaiwanMap({ width, height, year }: Props) {
                         "cursor-pointer stroke-1/2 stroke-slate-100",
                         districtColor[
                           getWinParty(
-                            {
-                              county: feature.properties.countyName,
-                              town: feature.properties.townName,
-                            },
-                            "town"
+                            { county: feature.properties.countyName },
+                            "county"
                           )
                         ]
                       )}
+                      onClick={(e) => clickHandler(feature, e)}
                     />
                   );
                 })}
-            </g>
-            {/*             <rect
+
+                {/* render compBorders */}
+                {compBorders.features.map((feature, i) => (
+                  <path
+                    key={i}
+                    d={path(feature) || ""}
+                    className="stroke-1 stroke-slate-800 fill-none"
+                  />
+                ))}
+
+                {/* render towns */}
+                {state.renderedTownsFeature &&
+                  state.renderedTownsFeature.map((feature, i) => {
+                    return (
+                      <path
+                        key={i}
+                        d={path(feature) || ""}
+                        className={cn(
+                          "cursor-pointer stroke-1/2 stroke-slate-100",
+                          districtColor[
+                            getWinParty(
+                              {
+                                county: feature.properties.countyName,
+                                town: feature.properties.townName,
+                              },
+                              "town"
+                            )
+                          ]
+                        )}
+                      />
+                    );
+                  })}
+              </g>
+              {/*             <rect
               width={width}
               height={height}
               // rx={14}
@@ -250,9 +274,10 @@ function TaiwanMap({ width, height, year }: Props) {
                 zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
               }}
             /> */}
-          </svg>
-        </div>
-      )}
+            </svg>
+          </div>
+        );
+      }}
     </Zoom>
   );
 }
