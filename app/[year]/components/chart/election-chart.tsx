@@ -36,6 +36,13 @@ export default function ElectionChart({ year }: Props) {
     [candidates]
   );
 
+  const voteDataArray = useMemo(() => {
+    return candidatesArray.map((c) => ({
+      percent: (voteResult[c.candidateId] / voteResult.validVotes) * 100,
+      color: c.partyAlias,
+    }));
+  }, [candidatesArray, voteResult]);
+
   const getTitle = useCallback(() => {
     if (currentDistrict === "nation") return "全臺縣市總統得票";
     if (currentDistrict === "county") return selectedCounty;
@@ -48,7 +55,7 @@ export default function ElectionChart({ year }: Props) {
       <h3 className="pt-32 pb-12">{getTitle()}</h3>
       <div className="bg-default rounded px-16 pb-16">
         <h5 className="py-24">總統得票數</h5>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
           <div className="px-24 py-16 bg-background rounded">
             <div className="flex justify-between items-center">
               {candidatesArray.map((candidate) => (
@@ -69,7 +76,7 @@ export default function ElectionChart({ year }: Props) {
                 />
               ))}
             </div>
-            <AmountChart data={[voteResult]} candidates={candidates} />
+            <AmountChart data={voteDataArray} showLabel />
           </div>
           <div className="p-24 pt-12 bg-background rounded">
             <div className="flex items-center gap-40">

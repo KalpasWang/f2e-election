@@ -12,7 +12,7 @@ const config: Config = {
     screens: {
       sm: "576px",
       md: "768px",
-      lg: "992px",
+      lg: "1024px",
       xl: "1200px",
       "2xl": "1400px",
     },
@@ -107,6 +107,9 @@ const config: Config = {
       },
       boxShadow: {
         label: "0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black",
+      },
+      transitionDuration: {
+        2000: "2000ms",
       },
     },
   },

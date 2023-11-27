@@ -1,63 +1,55 @@
-import { Candidate, CandidateId, PartyColor } from "@/types";
-import React from "react";
-import { BarChart, Bar, Tooltip, ResponsiveContainer } from "recharts";
+import React, { useEffect, useState } from "react";
+import { PartyColor } from "@/types";
 
 type Props = {
   data: {
-    candidate1: number;
-    candidate2: number;
-    candidate3: number;
-    validVotes: number;
-    invalidVotes: number;
-    totalVotes: number;
-    totalElectors: number;
-    votingRate: number;
+    percent: number;
+    color: PartyColor;
   }[];
-  candidates: {
-    [c in CandidateId]: Candidate;
-  };
+  showLabel?: boolean;
 };
 
-const fill: { [key in PartyColor]: string } = {
+const fillColor: { [key in PartyColor]: string } = {
   orange: "#F4A76F",
   blue: "#8082FF",
   green: "#57D2A9",
   grey: "#C4C4C4",
 };
 
-const AmountChart = React.memo(function ({ data, candidates }: Props) {
+const AmountChart = React.memo(function ({ data, showLabel = false }: Props) {
+  const [widths, setWidths] = useState(data.map(() => "0"));
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setWidths(
+        data.map((item) => {
+          return item.percent + "%";
+        })
+      );
+    });
+  }, [data]);
+
   return (
-    <ResponsiveContainer width="100%" height="50">
-      <BarChart
-        width={500}
-        height={50}
-        data={data}
-        layout="vertical"
-        margin={{
-          top: 12,
-        }}
-      >
-        <Tooltip />
-        <Bar
-          dataKey="candidate1"
-          stackId="a"
-          fill={fill[candidates.candidate1.partyAlias]}
-          label
-        />
-        <Bar
-          dataKey="candidate2"
-          stackId="a"
-          fill={fill[candidates.candidate2.partyAlias]}
-          label
-        />
-        <Bar
-          dataKey="candidate3"
-          stackId="a"
-          fill={fill[candidates.candidate3.partyAlias]}
-          label
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="flex h-16 mx-4 mt-12 rounded-2xl overflow-hidden">
+      {data.map((item, i) => {
+        return (
+          <div
+            key={i}
+            style={{
+              width: widths[i],
+              backgroundColor: fillColor[item.color],
+            }}
+            className="transition-all duration-2000 flex justify-center"
+          >
+            {showLabel && (
+              <span className="text-content1 text-body-small">
+                {item.percent.toFixed(0) + "%"}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 });
 
