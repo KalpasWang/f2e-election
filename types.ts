@@ -64,6 +64,7 @@ export type ElectionResult = {
   voteResult: VoteResult;
   countyVoteResult: CountyVoteResult[];
   townsVoteResult: TownVoteResult[];
+  villagesVoteResult: VillageVoteResult[];
 }[];
 
 // election data unit

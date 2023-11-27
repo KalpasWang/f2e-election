@@ -28,9 +28,7 @@ export default function ElectionContent({ year }: Props) {
         </ParentSize>
       </div>
       <div className="flex-grow">
-        <div className="bg-slate-400 flex justify-center items-center">
-          <ElectionChart />
-        </div>
+        <ElectionChart year={year} />
       </div>
     </div>
   );

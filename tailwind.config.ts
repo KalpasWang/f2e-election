@@ -50,6 +50,11 @@ const config: Config = {
       fontFamily: {
         TC: ["'Noto Sans TC'", "sans-serif"],
       },
+      colors: {
+        greenParty: "#57D2A9",
+        blueParty: "#8082FF",
+        orangeParty: "#F4A76F",
+      },
       strokeWidth: {
         "1/10": "0.1",
         "1/5": "0.2",
