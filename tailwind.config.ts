@@ -100,6 +100,9 @@ const config: Config = {
           },
         ],
       },
+      boxShadow: {
+        label: "0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black",
+      },
     },
   },
   darkMode: "class",

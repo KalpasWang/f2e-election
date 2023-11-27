@@ -205,21 +205,38 @@ function TaiwanMap({ width, height, year }: Props) {
               <g id="map-transform" transform={zoom.toString()}>
                 {/* render countys */}
                 {counties.features.map((feature, i) => {
+                  const [[x0, y0], [x1, y1]] = path.bounds(feature);
+                  const coords: [number, number] = [
+                    (x0 + x1) / 2,
+                    (y0 + y1) / 2,
+                  ];
+
                   return (
-                    <path
-                      key={i}
-                      d={path(feature) || ""}
-                      className={cn(
-                        "cursor-pointer stroke-1/2 stroke-slate-100",
-                        districtColor[
-                          getWinParty(
-                            { county: feature.properties.countyName },
-                            "county"
-                          )
-                        ]
-                      )}
-                      onClick={(e) => clickHandler(feature, e)}
-                    />
+                    <g key={`county-${i + 1}`}>
+                      <path
+                        d={path(feature) || ""}
+                        className={cn(
+                          "cursor-pointer stroke-1/10 stroke-slate-100",
+                          districtColor[
+                            getWinParty(
+                              { county: feature.properties.countyName },
+                              "county"
+                            )
+                          ]
+                        )}
+                        onClick={(e) => clickHandler(feature, e)}
+                      />
+                      <text
+                        transform={`translate(${coords})`}
+                        className="shadow-label"
+                        fontSize="9"
+                        fill="#fff"
+                        cursor="default"
+                        textAnchor="middle"
+                      >
+                        {feature.properties.countyName}
+                      </text>
+                    </g>
                   );
                 })}
 
@@ -235,23 +252,40 @@ function TaiwanMap({ width, height, year }: Props) {
                 {/* render towns */}
                 {state.renderedTownsFeature &&
                   state.renderedTownsFeature.map((feature, i) => {
+                    const [[x0, y0], [x1, y1]] = path.bounds(feature);
+                    const coords: [number, number] = [
+                      (x0 + x1) / 2,
+                      (y0 + y1) / 2,
+                    ];
+
                     return (
-                      <path
-                        key={i}
-                        d={path(feature) || ""}
-                        className={cn(
-                          "cursor-pointer stroke-1/2 stroke-slate-100",
-                          districtColor[
-                            getWinParty(
-                              {
-                                county: feature.properties.countyName,
-                                town: feature.properties.townName,
-                              },
-                              "town"
-                            )
-                          ]
-                        )}
-                      />
+                      <g key={`town-${i + 1}`}>
+                        <path
+                          d={path(feature) || ""}
+                          className={cn(
+                            "cursor-pointer stroke-1/4 stroke-slate-100",
+                            districtColor[
+                              getWinParty(
+                                {
+                                  county: feature.properties.countyName,
+                                  town: feature.properties.townName,
+                                },
+                                "town"
+                              )
+                            ]
+                          )}
+                        />
+                        <text
+                          transform={`translate(${coords})`}
+                          className="shadow-label"
+                          fontSize="6"
+                          fill="#fff"
+                          cursor="default"
+                          textAnchor="middle"
+                        >
+                          {feature.properties.townName}
+                        </text>
+                      </g>
                     );
                   })}
               </g>

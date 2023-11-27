@@ -61,7 +61,7 @@ export function getTransformMatrix(
   height: number
 ) {
   const [[x0, y0], [x1, y1]] = bounds;
-  const scale = 0.8 * Math.max(width / (x1 - x0), height / (y1 - y0));
+  const scale = 0.9 * Math.min(width / (x1 - x0), height / (y1 - y0));
   const matrix = composeMatrices(
     identityMatrix(),
     translateMatrix(width / 2, height / 2),
