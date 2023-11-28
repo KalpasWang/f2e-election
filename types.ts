@@ -1,5 +1,4 @@
 import { Feature, FeatureCollection, Geometry } from "geojson";
-import voteResult from "@/data/voteResult2020.json";
 
 // election years
 export type ElectionYear = 1996 | 2000 | 2004 | 2008 | 2012 | 2016 | 2020;
