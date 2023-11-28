@@ -1,4 +1,4 @@
-import Logo from "@/components/logo";
+import Logo from "@/components/my-logo";
 import { electionData, electionYears } from "@/config/electionData";
 import { Button, Image, cn } from "@nextui-org/react";
 import NextImage from "next/image";

@@ -7,7 +7,7 @@ import {
   NavbarItem,
   cn,
 } from "@nextui-org/react";
-import Logo from "@/components/logo";
+import Logo from "@/components/my-logo";
 import { mantouSans } from "../../../layout";
 import Facebook from "../icons/facebook";
 import Instagram from "../icons/instagram";
