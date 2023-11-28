@@ -192,7 +192,7 @@ export default function ElectionChart({ year }: Props) {
       case "vote": {
         return (
           <div className="w-full flex justify-center">
-            <div className="w-[300px]">
+            <div className="w-[200px] lg:w-[300px]">
               <AmountChart data={cellValue} showLabel />
             </div>
           </div>

@@ -71,12 +71,6 @@ export function getTransformMatrix(
   return matrix;
 }
 
-export function filterTownFeatures(county: CountyFeature): TownFeature[] {
-  return towns.features.filter(
-    (f) => f.properties.countyId === county.properties.countyId
-  );
-}
-
 export function getWinCandidateId(
   district: CountyVoteResult | TownVoteResult | VillageVoteResult
 ): CandidateId {
@@ -89,22 +83,3 @@ export function getWinCandidateId(
   else if (num === district.candidate2) return "candidate2";
   else return "candidate3";
 }
-
-// export function getTextFill(pathFill: string) {
-//   switch (pathFill) {
-//     case green[800]:
-//     case blue[800]:
-//       return grey[200];
-//     case green[600]:
-//     case blue[600]:
-//       return grey[50];
-//     case green[400]:
-//     case blue[400]:
-//       return grey[900];
-//     case green[200]:
-//     case blue[200]:
-//       return grey[900];
-//     default:
-//       return grey[500]; // default fill is grey 900.
-//   }
-// }

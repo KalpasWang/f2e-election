@@ -7,16 +7,12 @@ import React, {
   useRef,
 } from "react";
 import { Zoom } from "@visx/zoom";
-import { cn } from "@nextui-org/react";
+import { Button, cn } from "@nextui-org/react";
 import { geoPath } from "d3-geo";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 import useElectionStore from "@/hooks/useElectionStore";
-import { counties, compBorders, towns, electionResult } from "@/data";
-import {
-  filterTownFeatures,
-  getTransformMatrix,
-  getWinCandidateId,
-} from "./helpers";
+import { counties, compBorders, electionResult } from "@/data";
+import { getTransformMatrix, getWinCandidateId } from "./helpers";
 import {
   County,
   CountyFeature,
@@ -25,6 +21,7 @@ import {
   PartyColor,
   TownFeature,
 } from "@/types";
+import ArrowLeft from "../icons/arrow-left";
 
 type Props = {
   width: number;
@@ -32,71 +29,31 @@ type Props = {
   year: ElectionYear;
 };
 
-type MapState = {
-  selectedDistrictFeature?: CountyFeature | TownFeature;
-  selectedCountyFeature?: CountyFeature;
-  selectedTownFeature?: TownFeature;
-  renderedTownsFeature?: TownFeature[];
-};
-
-type MapAction =
-  | {
-      type: "selectCounty";
-      payload: { county: CountyFeature; towns: TownFeature[] };
-    }
-  | {
-      type: "selectTown";
-      payload: { town: TownFeature };
-    }
-  | { type: "reset" };
-
-function mapReducer(state: MapState, action: MapAction): MapState {
-  switch (action.type) {
-    case "selectCounty": {
-      const { county, towns } = action.payload;
-      return {
-        selectedDistrictFeature: county,
-        selectedCountyFeature: county,
-        selectedTownFeature: undefined,
-        renderedTownsFeature: towns,
-      };
-    }
-    case "selectTown": {
-      const { town } = action.payload;
-      return {
-        ...state,
-        selectedDistrictFeature: town,
-        selectedTownFeature: town,
-      };
-    }
-    case "reset": {
-      return {
-        selectedDistrictFeature: undefined,
-        selectedCountyFeature: undefined,
-        selectedTownFeature: undefined,
-        renderedTownsFeature: undefined,
-      };
-    }
-    default:
-      return state;
-  }
-}
-
 function TaiwanMap({ width, height, year }: Props) {
   const store = useElectionStore((state) => ({
     currentDistrict: state.currentDistrict,
+    back: state.back,
     selectedCounty: state.selectedCounty,
     selectedTown: state.selectedTown,
+    selectedCountyFeature: state.selectedCountyFeature,
+    filteredTownFeatures: state.filteredTownFeatures,
+    selectedTownFeature: state.selectedTownFeature,
     setSelectedCounty: state.setSelectedCounty,
     setSelectedTown: state.setSelectedTown,
   }));
-  const [state, dispatch] = useReducer(mapReducer, {});
   const path = geoPath().projection(null);
   const zoomRef = useRef<ProvidedZoom<SVGSVGElement>>();
-  const electionData = electionResult.find((item) => item.year === +year);
-  if (!electionData) {
-    console.error(`Election data in year: ${year} not found`);
-  }
+  const countyRef = useRef(store.selectedCounty);
+  const townRef = useRef(store.selectedTown);
+
+  const electionData = useMemo(() => {
+    const found = electionResult.find((item) => item.year === +year);
+    if (!found) {
+      console.error(`Election data in year: ${year} not found`);
+    }
+    return found;
+  }, [year]);
+
   const { candidates, countysVoteResult, townsVoteResult } = electionData!;
 
   const getWinnerParty = useCallback(
@@ -143,39 +100,68 @@ function TaiwanMap({ width, height, year }: Props) {
   // console.log(store);
   // console.log(state);
 
-  const clickHandler = useCallback(
+  const countyClickHandler = useCallback(
     (feature: CountyFeature, e?: React.MouseEvent<SVGPathElement>) => {
       e?.stopPropagation();
       const matrix = getTransformMatrix(path.bounds(feature), width, height);
-      const towns = filterTownFeatures(feature);
 
-      store.setSelectedCounty(feature.properties.countyName as County);
-      dispatch({ type: "selectCounty", payload: { county: feature, towns } });
+      store.setSelectedCounty(feature.properties.countyName as County, feature);
+      countyRef.current = feature.properties.countyName;
+      zoomRef.current?.setTransformMatrix(matrix);
+    },
+    [height, path, store, width]
+  );
+
+  const townClickHandler = useCallback(
+    (feature: TownFeature, e?: React.MouseEvent<SVGPathElement>) => {
+      e?.stopPropagation();
+      const matrix = getTransformMatrix(path.bounds(feature), width, height);
+
+      store.setSelectedTown(feature.properties.townName, feature);
+      townRef.current = feature.properties.townName;
       zoomRef.current?.setTransformMatrix(matrix);
     },
     [height, path, store, width]
   );
 
   useEffect(() => {
-    if (
-      store.selectedCounty !==
-        state.selectedCountyFeature?.properties.countyName ||
-      store.selectedTown !== state.selectedTownFeature?.properties.townName
-    ) {
-      const county = counties.features.find(
-        (feature) => feature.properties.countyName === store.selectedCounty
-      );
-      if (!county) {
+    if (store.selectedCounty !== countyRef.current) {
+      if (store.selectedCounty === "全部") {
         zoomRef.current?.reset();
-        return;
+      } else {
+        const matrix = getTransformMatrix(
+          // @ts-expect-error
+          path.bounds(store.selectedCountyFeature),
+          width,
+          height
+        );
+        zoomRef.current?.setTransformMatrix(matrix);
       }
-      const matrix = getTransformMatrix(path.bounds(county), width, height);
-      const towns = filterTownFeatures(county);
-
-      dispatch({ type: "selectCounty", payload: { county, towns } });
-      zoomRef.current?.setTransformMatrix(matrix);
     }
-  }, [state, store, width, height, clickHandler, path]);
+
+    if (store.selectedTown !== townRef.current) {
+      if (store.selectedTown === "全部") {
+        const matrix = getTransformMatrix(
+          // @ts-expect-error
+          path.bounds(store.selectedCountyFeature),
+          width,
+          height
+        );
+        zoomRef.current?.setTransformMatrix(matrix);
+      } else {
+        const matrix = getTransformMatrix(
+          // @ts-expect-error
+          path.bounds(store.selectedTownFeature),
+          width,
+          height
+        );
+        zoomRef.current?.setTransformMatrix(matrix);
+      }
+    }
+
+    countyRef.current = store.selectedCounty;
+    townRef.current = store.selectedTown;
+  }, [store, width, height, path]);
 
   return (
     <Zoom<SVGSVGElement>
@@ -223,7 +209,7 @@ function TaiwanMap({ width, height, year }: Props) {
                             )
                           ]
                         )}
-                        onClick={(e) => clickHandler(feature, e)}
+                        onClick={(e) => countyClickHandler(feature, e)}
                       />
                       <text
                         transform={`translate(${coords})`}
@@ -240,17 +226,32 @@ function TaiwanMap({ width, height, year }: Props) {
                 })}
 
                 {/* render compBorders */}
-                {compBorders.features.map((feature, i) => (
-                  <path
-                    key={i}
-                    d={path(feature) || ""}
-                    className="stroke-1 stroke-slate-800 fill-none"
-                  />
-                ))}
+                {compBorders.features.map((feature, i) => {
+                  const [[x0, y0], [x1, y1]] = path.bounds(feature);
+                  const coords: [number, number] = [(x0 + x1) / 2, y1 + 10];
+                  return (
+                    <g key={i}>
+                      <path
+                        d={path(feature) || ""}
+                        className="stroke-1 stroke-slate-800 fill-none"
+                      />
+                      <text
+                        transform={`translate(${coords})`}
+                        className="shadow-label"
+                        fontSize="9"
+                        fill="#1r293b"
+                        cursor="default"
+                        textAnchor="middle"
+                      >
+                        {feature.properties.name}
+                      </text>
+                    </g>
+                  );
+                })}
 
                 {/* render towns */}
-                {state.renderedTownsFeature &&
-                  state.renderedTownsFeature.map((feature, i) => {
+                {store.filteredTownFeatures &&
+                  store.filteredTownFeatures.map((feature, i) => {
                     const [[x0, y0], [x1, y1]] = path.bounds(feature);
                     const coords: [number, number] = [
                       (x0 + x1) / 2,
@@ -261,6 +262,7 @@ function TaiwanMap({ width, height, year }: Props) {
                       <g key={`town-${i + 1}`}>
                         <path
                           d={path(feature) || ""}
+                          onClick={(e) => townClickHandler(feature, e)}
                           className={cn(
                             "cursor-pointer stroke-1/4 stroke-slate-100",
                             districtColor[
@@ -288,26 +290,20 @@ function TaiwanMap({ width, height, year }: Props) {
                     );
                   })}
               </g>
-              {/*             <rect
-              width={width}
-              height={height}
-              // rx={14}
-              fill="transparent"
-              onTouchStart={zoom.dragStart}
-              onTouchMove={zoom.dragMove}
-              onTouchEnd={zoom.dragEnd}
-              onMouseDown={zoom.dragStart}
-              onMouseMove={zoom.dragMove}
-              onMouseUp={zoom.dragEnd}
-              onMouseLeave={() => {
-                if (zoom.isDragging) zoom.dragEnd();
-              }}
-              onDoubleClick={(event) => {
-                const point = localPoint(event) || { x: 0, y: 0 };
-                zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
-              }}
-            /> */}
             </svg>
+            <div className="absolute top-24 left-24">
+              {store.currentDistrict !== "nation" && (
+                <Button
+                  radius="full"
+                  color="default"
+                  startContent={<ArrowLeft />}
+                  size="sm"
+                  onClick={() => store.back()}
+                >
+                  返回
+                </Button>
+              )}
+            </div>
           </div>
         );
       }}

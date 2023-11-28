@@ -20,7 +20,7 @@ export default function ElectionContent({ year }: Props) {
 
   return (
     <div className="w-full h-full bg-background lg:flex">
-      <div className="w-full h-[600px] lg:w-auto lg:h-auto lg:basis-4/12">
+      <div className="w-full h-[600px] lg:w-4/12 lg:h-auto lg:basis-4/12">
         <ParentSize>
           {({ width, height }) => (
             <TaiwanMap width={width} height={height} year={year} />

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Dropdown,
   DropdownTrigger,
@@ -15,7 +15,10 @@ import ArrowDown from "../icons/arrow-down";
 type Props = {};
 
 export default function YearDropdown({}: Props) {
-  const isLoaded = useElectionStore((state) => state.isLoaded);
+  const { isLoaded, reset } = useElectionStore((state) => ({
+    isLoaded: state.isLoaded,
+    reset: state.reset,
+  }));
   const pathname = usePathname();
   const year = pathname.slice(1);
 
@@ -45,7 +48,11 @@ export default function YearDropdown({}: Props) {
           {electionDataArray
             .filter((d) => !d.disable)
             .map((data) => (
-              <DropdownItem key={data.year} href={`/${data.year}`}>
+              <DropdownItem
+                key={data.year}
+                href={`/${data.year}`}
+                onClick={() => reset()}
+              >
                 {data.year}
               </DropdownItem>
             ))}
