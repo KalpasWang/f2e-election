@@ -8,7 +8,7 @@ import {
   cn,
 } from "@nextui-org/react";
 import Logo from "@/components/my-logo";
-import { mantouSans } from "../../../layout";
+import { mantouSans } from "../../../fonts";
 import Facebook from "../icons/facebook";
 import Instagram from "../icons/instagram";
 import Youtube from "../icons/youtube";

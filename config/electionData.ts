@@ -53,7 +53,7 @@ export const electionData: ElectionData = {
   },
   2016: {
     year: 2016,
-    disable: false,
+    disable: true,
   },
   2020: {
     year: 2020,

@@ -3,7 +3,7 @@ import { electionData, electionYears } from "@/config/electionData";
 import { Button, Image, cn } from "@nextui-org/react";
 import NextImage from "next/image";
 import NextLink from "next/link";
-import { mantouSans } from "./layout";
+import { mantouSans } from "./fonts";
 
 export default function Home() {
   return (
