@@ -4,7 +4,7 @@ type Props = {
   className?: string;
 };
 
-export default function Logo({ className }: Props) {
+const Logo = React.memo(function ({ className }: Props) {
   return (
     <svg
       className={className}
@@ -206,4 +206,7 @@ export default function Logo({ className }: Props) {
       </defs>
     </svg>
   );
-}
+});
+
+Logo.displayName = "Logo";
+export default Logo;

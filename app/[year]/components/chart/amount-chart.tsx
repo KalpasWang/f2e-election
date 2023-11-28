@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { PartyColor } from "@/types";
 
 type Props = {
@@ -18,11 +18,13 @@ const fillColor: { [key in PartyColor]: string } = {
 
 const AmountChart = React.memo(function ({ data, showLabel = false }: Props) {
   const [widths, setWidths] = useState(data.map(() => "0"));
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    requestAnimationFrame(() => {
+    startTransition(() => {
       setWidths(
         data.map((item) => {
+          // console.log(item.percent);
           return item.percent + "%";
         })
       );
@@ -30,7 +32,7 @@ const AmountChart = React.memo(function ({ data, showLabel = false }: Props) {
   }, [data]);
 
   return (
-    <div className="flex h-16 mx-4 mt-12 rounded-2xl overflow-hidden">
+    <div className="flex h-16 rounded-2xl overflow-hidden">
       {data.map((item, i) => {
         return (
           <div

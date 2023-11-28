@@ -135,9 +135,9 @@ function TaiwanMap({ width, height, year }: Props) {
   );
 
   const districtColor: DistrictColor = {
-    green: "fill-green-400",
-    blue: "fill-blue-400",
-    orange: "fill-orange-400",
+    green: "fill-greenParty",
+    blue: "fill-blueParty",
+    orange: "fill-orangeParty",
     grey: "fill-slate-400",
   };
 
@@ -190,7 +190,7 @@ function TaiwanMap({ width, height, year }: Props) {
       {(zoom) => {
         zoomRef.current = zoom;
         return (
-          <div className="relative">
+          <div className="relative lg:h-[calc(100vh-64.8px)]">
             <svg
               id="map-svg"
               width={width}

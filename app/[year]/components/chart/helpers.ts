@@ -16,9 +16,18 @@ export function getWinnerName(
     district.candidate3
   );
   if (num === district.candidate1)
-    return { name: candidates.candidate1.candidateName1, img: "/candidate1" };
+    return {
+      name: candidates.candidate1.candidateName1,
+      img: "/candidate1.jpg",
+    };
   else if (num === district.candidate2)
-    return { name: candidates.candidate2.candidateName1, img: "/candidate2" };
+    return {
+      name: candidates.candidate2.candidateName1,
+      img: "/candidate2.jpg",
+    };
   else
-    return { name: candidates.candidate3.candidateName1, img: "/candidate3" };
+    return {
+      name: candidates.candidate3.candidateName1,
+      img: "/candidate3.jpg",
+    };
 }

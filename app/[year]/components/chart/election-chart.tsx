@@ -92,6 +92,7 @@ export default function ElectionChart({ year }: Props) {
       region: region.countyName,
       vote: candidatesArray.map((c) => ({
         percent: (region[c.candidateId] / region.validVotes) * 100,
+        color: c.partyAlias,
       })),
       winner: getWinnerName(region, candidates),
       amount: region.validVotes,
@@ -111,103 +112,118 @@ export default function ElectionChart({ year }: Props) {
     else return "各區域投票總覽";
   }, [currentDistrict]);
 
-  const renderCell = useCallback(
-    (item: any, columnKey: Key) => {
-      const cellValue = item[columnKey as string];
+  const renderCell = useCallback((item: any, columnKey: Key) => {
+    const cellValue = item[columnKey as string];
 
-      switch (columnKey) {
-        case "region":
-          return <h6 className="font-bold">{cellValue}</h6>;
-        case "vote": {
-          const data = candidatesArray.map((c) => ({
-            percent: (item[c.candidateId] / item.validVotes) * 100,
-            color: c.partyAlias,
-          }));
-          return <AmountChart data={data} />;
-        }
-        case "winner":
-          return (
-            <User
-              name={item.name}
-              avatarProps={{
-                src: item.img,
-              }}
-            />
-          );
-        default:
-          return cellValue;
+    switch (columnKey) {
+      case "region":
+        return <h6 className="font-bold">{cellValue}</h6>;
+      case "vote": {
+        return (
+          <div className="w-full flex justify-center">
+            <div className="w-[300px]">
+              <AmountChart data={cellValue} showLabel />
+            </div>
+          </div>
+        );
       }
-    },
-    [candidatesArray]
-  );
+      case "winner":
+        return (
+          <User
+            name={cellValue.name}
+            avatarProps={{
+              src: cellValue.img,
+              className: "rounded-none w-32 h-32 mr-8",
+            }}
+          />
+        );
+      case "amount":
+        return (
+          <div className="text-right pr-16">
+            {Intl.NumberFormat("en-US").format(cellValue)}
+          </div>
+        );
+      case "rate":
+        return cellValue.toFixed(2) + "%";
+      default:
+        return cellValue;
+    }
+  }, []);
 
   return (
-    <div className="h-full overflow-auto bg-background px-40">
-      {/* title */}
-      <h3 className="pt-32 pb-12">{bigTitle}</h3>
-      {/* 總統得票數, 其他統計數字 */}
-      <div className="bg-default rounded px-16 pb-16">
-        <h5 className="py-24">總統得票數</h5>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
-          <div className="px-24 py-16 bg-background rounded">
-            <div className="flex justify-between items-center">
-              {candidatesArray.map((candidate) => (
-                <Avatar
-                  key={candidate.candidateId}
-                  name={
-                    <>
-                      <span className="text-xs text-secondary">
-                        {candidate.party}
-                      </span>
-                      <p className="text-content1">
-                        {candidate.candidateName1}
-                      </p>
-                    </>
-                  }
-                  description={voteResult[candidate.candidateId]}
-                  img={`/${candidate.candidateId}.jpg`}
-                />
-              ))}
+    <div className="lg:h-[calc(100vh-64.8px)] overflow-auto bg-background">
+      <div className="container">
+        {/* title */}
+        <h3 className="pt-32 pb-12">{bigTitle}</h3>
+        {/* 總統得票數, 其他統計數字 */}
+        <div className="bg-default rounded px-16 pb-16">
+          <h5 className="py-24">總統得票數</h5>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+            <div className="px-24 py-16 bg-background rounded">
+              <div className="flex justify-between items-center pb-12">
+                {candidatesArray.map((candidate) => (
+                  <Avatar
+                    key={candidate.candidateId}
+                    name={
+                      <>
+                        <span className="text-xs text-secondary">
+                          {candidate.party}
+                        </span>
+                        <p className="text-content1">
+                          {candidate.candidateName1}
+                        </p>
+                      </>
+                    }
+                    description={voteResult[candidate.candidateId]}
+                    img={`/${candidate.candidateId}.jpg`}
+                  />
+                ))}
+              </div>
+              <AmountChart data={voteDataArray} showLabel />
             </div>
-            <AmountChart data={voteDataArray} showLabel />
-          </div>
-          <div className="p-24 pt-12 bg-background rounded">
-            <div className="flex items-center gap-40">
-              <CircularChart label="投票率" percent={voteResult.votingRate} />
-              <div className="grid grid-cols-2 grid-rows-2 gap-16 flex-grow">
-                <Info title="投票數" value={voteResult.totalVotes} />
-                <Info
-                  title="投票率"
-                  value={voteResult.votingRate}
-                  format="precent"
-                />
-                <Info title="有效票數" value={voteResult.validVotes} />
-                <Info title="無效票數" value={voteResult.invalidVotes} />
+            <div className="p-24 pt-12 bg-background rounded">
+              <div className="flex items-center gap-40">
+                <CircularChart label="投票率" percent={voteResult.votingRate} />
+                <div className="grid grid-cols-2 grid-rows-2 gap-16 flex-grow">
+                  <Info title="投票數" value={voteResult.totalVotes} />
+                  <Info
+                    title="投票率"
+                    value={voteResult.votingRate}
+                    format="precent"
+                  />
+                  <Info title="有效票數" value={voteResult.validVotes} />
+                  <Info title="無效票數" value={voteResult.invalidVotes} />
+                </div>
               </div>
             </div>
           </div>
         </div>
+        {/* 下屬區域總覽 */}
+        <div className="py-40">
+          <h5 className="pb-8">{subRegionTitle}</h5>
+          <Table removeWrapper aria-label={subRegionTitle}>
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn key={column.key} className="text-center">
+                  {column.label}
+                </TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={rows}>
+              {(item) => (
+                <TableRow key={item.key}>
+                  {(columnKey) => (
+                    <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-      {/* 下屬區域總覽 */}
-      <div className="py-40">
-        <h5 className="pb-8">{subRegionTitle}</h5>
-        <Table removeWrapper aria-label={subRegionTitle}>
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={rows}>
-            {(item) => (
-              <TableRow key={item.key}>
-                {(columnKey) => (
-                  <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <footer className="py-16 text-center bg-default">
+        版權所有 &copy; 2023 台灣歷年總統 都幾?
+      </footer>
     </div>
   );
 }

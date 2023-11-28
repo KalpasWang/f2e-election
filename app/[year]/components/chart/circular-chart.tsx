@@ -17,7 +17,7 @@ const CircularChart = React.memo(function ({ percent, label }: Props) {
         value: "text-xl font-bold text-primary",
       }}
       label={label}
-      value={+percent.toFixed(2)}
+      value={percent}
       strokeWidth={4}
       showValueLabel={true}
     />
