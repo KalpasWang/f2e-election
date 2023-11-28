@@ -24,7 +24,7 @@ export default function Header({}: Props) {
       isBordered
       classNames={{ wrapper: "flex-col h-fit lg:flex-row" }}
     >
-      <NavbarContent justify="start" className="pt-12 lg:pt-0">
+      <NavbarContent justify="start" className="pt-12 lg:py-[11px]">
         <NavbarBrand className="mr-24">
           <Logo className="w-[53px] h-[33px] pr-8" />
           <Link
