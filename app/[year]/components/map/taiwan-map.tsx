@@ -14,7 +14,6 @@ import useElectionStore from "@/hooks/useElectionStore";
 import { counties, compBorders, towns, electionResult } from "@/data";
 import {
   filterTownFeatures,
-  getInitialMatrix,
   getTransformMatrix,
   getWinCandidateId,
 } from "./helpers";
@@ -98,15 +97,15 @@ function TaiwanMap({ width, height, year }: Props) {
   if (!electionData) {
     console.error(`Election data in year: ${year} not found`);
   }
-  const { candidates, countyVoteResult, townsVoteResult } = electionData!;
+  const { candidates, countysVoteResult, townsVoteResult } = electionData!;
 
-  const getWinParty = useCallback(
+  const getWinnerParty = useCallback(
     (
       district: { county: County; town?: string; village?: string },
       type: "county" | "town" | "village"
     ): PartyColor => {
       if (type === "county") {
-        const county = countyVoteResult.find(
+        const county = countysVoteResult.find(
           (item) => item.countyName === district.county
         );
         if (!county) {
@@ -117,7 +116,7 @@ function TaiwanMap({ width, height, year }: Props) {
         return color;
       }
       if (type === "town") {
-        const town = townsVoteResult.find(
+        const town = townsVoteResult?.find(
           (item) =>
             item.countyName === district.county &&
             item.townName === district.town
@@ -131,7 +130,7 @@ function TaiwanMap({ width, height, year }: Props) {
       }
       return "grey";
     },
-    [candidates, countyVoteResult, townsVoteResult]
+    [candidates, countysVoteResult, townsVoteResult]
   );
 
   const districtColor: DistrictColor = {
@@ -190,7 +189,7 @@ function TaiwanMap({ width, height, year }: Props) {
       {(zoom) => {
         zoomRef.current = zoom;
         return (
-          <div className="relative lg:h-[calc(100vh-64.8px)]">
+          <div className="relative">
             <svg
               id="map-svg"
               width={width}
@@ -218,7 +217,7 @@ function TaiwanMap({ width, height, year }: Props) {
                         className={cn(
                           "cursor-pointer stroke-1/10 stroke-slate-100",
                           districtColor[
-                            getWinParty(
+                            getWinnerParty(
                               { county: feature.properties.countyName },
                               "county"
                             )
@@ -265,7 +264,7 @@ function TaiwanMap({ width, height, year }: Props) {
                           className={cn(
                             "cursor-pointer stroke-1/4 stroke-slate-100",
                             districtColor[
-                              getWinParty(
+                              getWinnerParty(
                                 {
                                   county: feature.properties.countyName,
                                   town: feature.properties.townName,
@@ -278,7 +277,7 @@ function TaiwanMap({ width, height, year }: Props) {
                         <text
                           transform={`translate(${coords})`}
                           className="shadow-label"
-                          fontSize="6"
+                          fontSize="4"
                           fill="#fff"
                           cursor="default"
                           textAnchor="middle"

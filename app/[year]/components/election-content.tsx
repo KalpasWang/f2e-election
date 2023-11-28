@@ -27,7 +27,7 @@ export default function ElectionContent({ year }: Props) {
           )}
         </ParentSize>
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow overflow-auto">
         <ElectionChart year={year} />
       </div>
     </div>

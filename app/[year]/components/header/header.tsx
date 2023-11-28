@@ -19,21 +19,24 @@ type Props = {};
 
 export default function Header({}: Props) {
   return (
-    <Navbar position="static" isBordered>
-      <NavbarContent justify="start">
+    <Navbar position="static" isBordered className="flex-col h-fit lg:flex-row">
+      <NavbarContent justify="start" className="pt-12 lg:pt-0">
         <NavbarBrand className="mr-24">
           <Logo className="w-[53px] h-[33px] pr-8" />
           <Link
             href="/"
             className={cn(
               mantouSans.className,
-              "text-content1 text-[1.75rem] font-blod leading-normal"
+              "text-content1 text-xl lg:text-[1.75rem] leading-normal"
             )}
           >
             台灣歷年總統 都幾?
           </Link>
         </NavbarBrand>
-        <NavbarItem className="flex flex-nowrap items-center gap-16">
+        <NavbarItem className="lg:hidden">
+          <YearDropdown />
+        </NavbarItem>
+        <NavbarItem className="hidden lg:flex flex-nowrap items-center gap-16">
           <>
             <YearDropdown />
             <DistrictDropdown />
@@ -41,7 +44,13 @@ export default function Header({}: Props) {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarContent justify="end" className="gap-16">
+      <NavbarContent className="block pb-12 lg:hidden">
+        <NavbarItem>
+          <DistrictDropdown />
+        </NavbarItem>
+      </NavbarContent>
+
+      <NavbarContent justify="end" className="hidden lg:flex gap-16">
         <NavbarItem>分享</NavbarItem>
         <NavbarItem>
           <Facebook />

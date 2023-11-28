@@ -38,7 +38,7 @@
       "totalElectors": 19311105,
       "votingRate": 74.9
     },
-    "countyVoteResult": [
+    "countysVoteResult": [
       {
         "countyName": "台北市",
         "candidate1": 70769,
@@ -105467,7 +105467,7 @@
       "totalElectors": 18782991,
       "votingRate": 66.27
     },
-    "countyVoteResult": [
+    "countysVoteResult": [
       {
         "countyName": "臺北市",
         "candidate1": 546491,

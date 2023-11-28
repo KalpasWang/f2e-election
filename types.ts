@@ -62,9 +62,9 @@ export type ElectionResult = {
     [c in CandidateId]: Candidate;
   };
   voteResult: VoteResult;
-  countyVoteResult: CountyVoteResult[];
-  townsVoteResult: TownVoteResult[];
-  villagesVoteResult: VillageVoteResult[];
+  countysVoteResult: CountyVoteResult[];
+  townsVoteResult?: TownVoteResult[];
+  villagesVoteResult?: VillageVoteResult[];
 }[];
 
 // election data unit

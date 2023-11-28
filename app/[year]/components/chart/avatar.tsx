@@ -17,7 +17,7 @@ export default function Avatar({ name, description, img }: Props) {
       }}
       avatarProps={{
         src: img,
-        className: "rounded-none",
+        className: "rounded-none mr-12",
       }}
     />
   );

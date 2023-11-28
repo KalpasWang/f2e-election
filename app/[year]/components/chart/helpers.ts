@@ -4,10 +4,11 @@ import {
   CountyVoteResult,
   TownVoteResult,
   VillageVoteResult,
+  VoteResult,
 } from "@/types";
 
 export function getWinnerName(
-  district: CountyVoteResult | TownVoteResult | VillageVoteResult,
+  district: VoteResult | CountyVoteResult | TownVoteResult | VillageVoteResult,
   candidates: { [c in CandidateId]: Candidate }
 ) {
   const num = Math.max(

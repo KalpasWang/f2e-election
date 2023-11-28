@@ -7,11 +7,13 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <div className="h-screen w-full flex flex-col items-stretch">
-      <div>
+    <div className="lg:h-screen w-full flex flex-col items-stretch">
+      <header>
         <Header />
-      </div>
-      <main className="flex-grow">{children}</main>
+      </header>
+      <main className="flex-grow lg:max-h-[calc(100vh-64.8px)]">
+        {children}
+      </main>
     </div>
   );
 }

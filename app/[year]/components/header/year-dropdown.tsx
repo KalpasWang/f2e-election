@@ -21,7 +21,7 @@ export default function YearDropdown({}: Props) {
 
   return (
     <div className="inline">
-      <h6 className="inline-block text-content1 pr-16">選擇年份</h6>
+      <h6 className="hidden lg:inline-block text-content1 pr-16">選擇年份</h6>
       <Dropdown>
         <DropdownTrigger>
           <Button

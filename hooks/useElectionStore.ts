@@ -54,7 +54,7 @@ const useElectionStore = create<State & Actions>()((set, get) => ({
     }
 
     set({
-      currentDistrict: "county",
+      currentDistrict: "town",
       selectedTown: town,
     });
   },
