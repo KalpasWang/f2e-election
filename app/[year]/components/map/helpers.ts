@@ -83,3 +83,7 @@ export function getWinCandidateId(
   else if (num === district.candidate2) return "candidate2";
   else return "candidate3";
 }
+
+export function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}

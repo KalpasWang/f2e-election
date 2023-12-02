@@ -59,6 +59,7 @@ const useElectionStore = create<State & Actions>()((set, get) => ({
         currentDistrict: "county",
         selectedTown: "全部",
         selectedTownFeature: undefined,
+        filteredTownFeatures: undefined,
       });
     }
   },

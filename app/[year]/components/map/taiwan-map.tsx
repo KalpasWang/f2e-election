@@ -12,7 +12,7 @@ import { geoPath } from "d3-geo";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 import useElectionStore from "@/hooks/useElectionStore";
 import { counties, compBorders, electionResult } from "@/data";
-import { getTransformMatrix, getWinCandidateId } from "./helpers";
+import { clamp, getTransformMatrix, getWinCandidateId } from "./helpers";
 import {
   County,
   CountyFeature,
@@ -28,6 +28,22 @@ type Props = {
   height: number;
   year: ElectionYear;
 };
+
+// 行政區文字標註位置的位移量
+const coordOffsets: Record<string, [number, number]> = {
+  "Taitung County": [-20, -20],
+};
+
+/**
+ * These districts are too small to have text labels
+ * some of them will be labeled by compborder
+ */
+const ignoredDistricts = [
+  "Penghu County",
+  "Kinmen County",
+  "Lienchiang County",
+  "Wuqiu Township",
+];
 
 function TaiwanMap({ width, height, year }: Props) {
   const store = useElectionStore((state) => ({
@@ -196,6 +212,32 @@ function TaiwanMap({ width, height, year }: Props) {
                     (y0 + y1) / 2,
                   ];
 
+                  const offset = coordOffsets[feature.properties.countyEng];
+                  if (offset) {
+                    coords[0] += offset[0];
+                    coords[1] += offset[1];
+                  }
+
+                  if (ignoredDistricts.includes(feature.properties.countyEng)) {
+                    return (
+                      <g key={`county-${i + 1}`}>
+                        <path
+                          d={path(feature) || ""}
+                          className={cn(
+                            "cursor-pointer stroke-1/10 stroke-slate-100",
+                            districtColor[
+                              getWinnerParty(
+                                { county: feature.properties.countyName },
+                                "county"
+                              )
+                            ]
+                          )}
+                          onClick={(e) => countyClickHandler(feature, e)}
+                        />
+                      </g>
+                    );
+                  }
+
                   return (
                     <g key={`county-${i + 1}`}>
                       <path
@@ -214,7 +256,7 @@ function TaiwanMap({ width, height, year }: Props) {
                       <text
                         transform={`translate(${coords})`}
                         className="shadow-label"
-                        fontSize="9"
+                        fontSize={clamp((x1 - x0) / 5, 6, 10)}
                         fill="#fff"
                         cursor="default"
                         textAnchor="middle"
@@ -228,7 +270,7 @@ function TaiwanMap({ width, height, year }: Props) {
                 {/* render compBorders */}
                 {compBorders.features.map((feature, i) => {
                   const [[x0, y0], [x1, y1]] = path.bounds(feature);
-                  const coords: [number, number] = [(x0 + x1) / 2, y1 + 10];
+                  const coords: [number, number] = [(x0 + x1) / 2, y1 + 12];
                   return (
                     <g key={i}>
                       <path
@@ -238,7 +280,7 @@ function TaiwanMap({ width, height, year }: Props) {
                       <text
                         transform={`translate(${coords})`}
                         className="shadow-label"
-                        fontSize="9"
+                        fontSize="12"
                         fill="#1r293b"
                         cursor="default"
                         textAnchor="middle"
@@ -279,7 +321,7 @@ function TaiwanMap({ width, height, year }: Props) {
                         <text
                           transform={`translate(${coords})`}
                           className="shadow-label"
-                          fontSize="4"
+                          fontSize={clamp((x1 - x0) / 5, 1, 5)}
                           fill="#fff"
                           cursor="default"
                           textAnchor="middle"
