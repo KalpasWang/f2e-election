@@ -21,7 +21,7 @@ import {
   TableRow,
   User,
   getKeyValue,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { getWinnerName } from "./helpers";
 import CheckCircle from "../icons/check-circle";
 

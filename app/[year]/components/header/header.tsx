@@ -6,7 +6,7 @@ import {
   NavbarContent,
   NavbarItem,
   cn,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Logo from "@/components/my-logo";
 import { mantouSans } from "../../../fonts";
 import Facebook from "../icons/facebook";

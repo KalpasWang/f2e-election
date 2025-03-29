@@ -1,6 +1,6 @@
 import Logo from "@/components/my-logo";
 import { electionData, electionYears } from "@/config/electionData";
-import { Button, Image, cn } from "@nextui-org/react";
+import { Button, Image, cn } from "@heroui/react";
 import NextImage from "next/image";
 import NextLink from "next/link";
 import { mantouSans } from "./fonts";

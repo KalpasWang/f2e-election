@@ -7,7 +7,7 @@ import React, {
   useRef,
 } from "react";
 import { Zoom } from "@visx/zoom";
-import { Button, cn } from "@nextui-org/react";
+import { Button, cn } from "@heroui/react";
 import { geoPath } from "d3-geo";
 import { ProvidedZoom } from "@visx/zoom/lib/types";
 import useElectionStore from "@/hooks/useElectionStore";

@@ -7,7 +7,7 @@ import {
   DropdownItem,
   Button,
   Selection,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import useElectionStore from "@/hooks/useElectionStore";
 import ArrowDown from "../icons/arrow-down";
 import Search from "../icons/search";

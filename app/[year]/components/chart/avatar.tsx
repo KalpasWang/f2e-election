@@ -1,5 +1,5 @@
 import React from "react";
-import { User } from "@nextui-org/react";
+import { User } from "@heroui/react";
 
 type Props = {
   name: React.ReactNode;
